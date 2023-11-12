@@ -69,3 +69,149 @@ h6 {
 /*
   ---- END RESET ---------------------
 */
+
+:root {
+  --foreground: #ffffff;
+  --background: #000000;
+  --gray100: #262626;
+  --gray200: #444444;
+  --gray300: #535353;
+  --gray400: #696969;
+  --gray500: #838383;
+  --gray600: #a3a3a3;
+  --gray700: #bababa;
+  --gray800: #d1d1d1;
+  --gray900: #e3e3e3;
+  --gray1000: #f0f0f0;
+  --gray1100: #f9f9f9;
+  --red100: #451818;
+  --red200: #782a2a;
+  --red300: #923233;
+  --red400: #b83f40;
+  --red500: #e54f50;
+  --red600: #f38282;
+  --red700: #f6a6a6;
+  --red800: #f9c4c5;
+  --red900: #fcdcdc;
+  --red1000: #fdedee;
+  --red1100: #fef8f8;
+  --orange100: #36220e;
+  --orange200: #613c19;
+  --orange300: #75491f;
+  --orange400: #945c27;
+  --orange500: #b97431;
+  --orange600: #e48e3c;
+  --orange700: #ffa854;
+  --orange800: #ffc690;
+  --orange900: #ffddbd;
+  --orange1000: #ffeedd;
+  --orange1100: #fff8f1;
+  --yellow100: #2e2510;
+  --yellow200: #54421d;
+  --yellow300: #655023;
+  --yellow400: #80652c;
+  --yellow500: #9f7f37;
+  --yellow600: #c59d43;
+  --yellow700: #e3b44e;
+  --yellow800: #feca57;
+  --yellow900: #fee09e;
+  --yellow1000: #ffefce;
+  --yellow1100: #fff8ea;
+  --green100: #042d22;
+  --green200: #074e3b;
+  --green300: #095f48;
+  --green400: #0b775b;
+  --green500: #0e9572;
+  --green600: #2eb693;
+  --green700: #6cccb3;
+  --green800: #9fddcd;
+  --green900: #c6ebe1;
+  --green1000: #e1f5f0;
+  --green1100: #f2fbf9;
+  --teal100: #012c2d;
+  --teal200: #014d4d;
+  --teal300: #015d5d;
+  --teal400: #017676;
+  --teal500: #029293;
+  --teal600: #2fb3b4;
+  --teal700: #6cc9ca;
+  --teal800: #a0dcdd;
+  --teal900: #c6eaeb;
+  --teal1000: #e2f5f5;
+  --teal1100: #f3fafb;
+  --cyan100: #022b34;
+  --cyan200: #044b5a;
+  --cyan300: #055b6e;
+  --cyan400: #06738a;
+  --cyan500: #088fac;
+  --cyan600: #09b1d5;
+  --cyan700: #3dcbe9;
+  --cyan800: #86def1;
+  --cyan900: #b8ecf7;
+  --cyan1000: #dcf5fb;
+  --cyan1100: #f0fbfd;
+  --blue100: #0e2842;
+  --blue200: #184674;
+  --blue300: #1d558d;
+  --blue400: #256cb2;
+  --blue500: #2e86de;
+  --blue600: #68a7e7;
+  --blue700: #91bfee;
+  --blue800: #b6d5f3;
+  --blue900: #d3e5f8;
+  --blue1000: #e8f2fb;
+  --blue1100: #f5f9fd;
+  --purple100: #241569;
+  --purple200: #44309f;
+  --purple300: #5542a8;
+  --purple400: #6c5cb4;
+  --purple500: #877ac1;
+  --purple600: #a59cd1;
+  --purple700: #beb6dd;
+  --purple800: #d3cfe9;
+  --purple900: #e4e1f1;
+  --purple1000: #f1eff8;
+  --purple1100: #f9f8fc;
+  --pink100: #3c1a37;
+  --pink200: #6a2d62;
+  --pink300: #803776;
+  --pink400: #a24596;
+  --pink500: #ca57ba;
+  --pink600: #f470e2;
+  --pink700: #f79ceb;
+  --pink800: #fabef2;
+  --pink900: #fcd8f7;
+  --pink1000: #fdebfb;
+  --pink1100: #fef7fd;
+}
+
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: 'General Sans', sans-serif;
+  font-size: 18px;
+}
+
+main {
+  max-width: 768px;
+  padding: 16px 24px;
+  margin: 0 auto;
+}
+
+@media only screen and (max-width: 1024px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+}
