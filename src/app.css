@@ -185,11 +185,16 @@ h6 {
   --pink1100: #fef7fd;
 }
 
+@font-face {
+  font-family: 'Apple II Pro';
+  src: url('/Apple-II-Pro.otf') format('opentype');
+}
+
 body {
   color: var(--foreground);
   background-color: var(--background);
-  font-family: 'General Sans', sans-serif;
-  font-size: 18px;
+  font-family: 'Apple II Pro', sans-serif;
+  font-size: 24px;
 }
 
 main {
@@ -205,18 +210,18 @@ a {
 
 @media only screen and (max-width: 1024px) {
   body {
-    font-size: 16px;
+    font-size: 20px;
   }
 }
 
 @media only screen and (max-width: 768px) {
   body {
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 
 @media only screen and (max-width: 480px) {
   body {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
