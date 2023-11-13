@@ -9,3 +9,17 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model Player {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  lobbies Lobby[]
+}
+
+model Lobby {
+  id   Int    @id @default(autoincrement())
+  code String @unique
+
+  players Player[]
+}

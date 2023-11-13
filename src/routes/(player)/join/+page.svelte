@@ -7,10 +7,12 @@
 
 <main>
   <h1>Join</h1>
+  <p>Join an arcade lobby. You'll need the code.</p>
+  <br />
 
   <form method="POST" use:enhance>
     <label for="code">Code</label>
-    <input id="code" type="text" name="code" />
+    <input id="code" type="text" name="code" autocomplete="off" />
 
     <button type="submit">Join</button>
 
