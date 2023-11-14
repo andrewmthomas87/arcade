@@ -3,10 +3,13 @@
   import type { PageData } from './$types';
   import { invalidate } from '$app/navigation';
   import { enhance } from '$app/forms';
+  import { GAME_TYPES } from '$lib/games';
 
   const INVALIDATE_INTERVAL_MS = 2000;
 
   export let data: PageData;
+
+  $: isLocked = data.lobby.activeGame !== null;
 
   onMount(() => {
     const id = setInterval(() => invalidate('lobby'), INVALIDATE_INTERVAL_MS);
@@ -21,28 +24,37 @@
     <span class="code">{data.lobby.code}</span>
   </section>
 
-  <section>
-    <h2>Players</h2>
-    <ul>
-      {#each data.lobby.players as player (player.id)}
-        <li>{player.name}</li>
-      {/each}
-    </ul>
-  </section>
+  {#if isLocked}
+    <section>
+      <h2>Hold tight</h2>
+      <p>There's a game in progress...</p>
+    </section>
+  {:else}
+    <section>
+      <h2>Players</h2>
+      <ul>
+        {#each data.lobby.players as player (player.id)}
+          <li>{player.name}</li>
+        {/each}
+      </ul>
+    </section>
 
-  <section>
-    <h2>Play game</h2>
+    <section>
+      <h2>Play game</h2>
 
-    <form method="POST" use:enhance>
-      <label for="game">Game</label>
-      <select id="game" value="empty">
-        <option value="empty" disabled>Select a game</option>
-        <option value="verbose">verbose</option>
-      </select>
+      <form method="POST" use:enhance>
+        <label for="game">Game</label>
+        <select id="game" name="type" value="empty">
+          <option value="empty" disabled>Select a game</option>
+          {#each GAME_TYPES as type}
+            <option value={type}>{type}</option>
+          {/each}
+        </select>
 
-      <button type="submit">Go</button>
-    </form>
-  </section>
+        <button type="submit">Go</button>
+      </form>
+    </section>
+  {/if}
 </main>
 
 <style>

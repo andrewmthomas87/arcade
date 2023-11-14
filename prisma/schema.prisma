@@ -15,11 +15,26 @@ model Player {
   name String
 
   lobbies Lobby[]
+  games   Game[]
 }
 
 model Lobby {
   id   Int    @id @default(autoincrement())
   code String @unique
 
+  players      Player[]
+  games        Game[]   @relation(name: "lobby")
+  activeGame   Game?    @relation(fields: [activeGameId], references: [id])
+  activeGameId Int?     @unique
+}
+
+model Game {
+  id   Int    @id @default(autoincrement())
+  type String
+
+  lobby   Lobby    @relation(name: "lobby", fields: [lobbyId], references: [id])
+  lobbyId Int
   players Player[]
+
+  activeLobby Lobby?
 }

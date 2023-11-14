@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { COOKIE, parsePlayerCookie } from '$lib/cookies';
+import { getPlayerCookieOrThrow } from '$lib/cookies';
 import { generateRandomCode } from '$lib/code';
 import { db } from '$lib/server/db';
 
@@ -8,10 +8,7 @@ const GENERATE_CODE_MAX_ATTEMPTS = 10;
 
 export const actions = {
   default: async ({ cookies }) => {
-    const player = parsePlayerCookie(cookies.get(COOKIE.player));
-    if (!player) {
-      throw new Error('expected player cookie');
-    }
+    const player = getPlayerCookieOrThrow(cookies);
 
     const code = await generateUniqueCode(GENERATE_CODE_MAX_ATTEMPTS);
     if (code === null) {

@@ -1,3 +1,4 @@
+import { error, type Cookies } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const COOKIE = {
@@ -27,4 +28,13 @@ export function parsePlayerCookie(cookie: string | undefined): PlayerCookie | un
 
 export function serializePlayerCookie(id: number, name: string) {
   return JSON.stringify({ id, name } satisfies PlayerCookie);
+}
+
+export function getPlayerCookieOrThrow(cookies: Cookies) {
+  const player = parsePlayerCookie(cookies.get(COOKIE.player));
+  if (!player) {
+    throw error(400, new Error('Expected player cookie'));
+  }
+
+  return player;
 }

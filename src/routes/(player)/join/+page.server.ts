@@ -1,28 +1,23 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { ZodError, z } from 'zod';
+import { z } from 'zod';
 import { CODE_LENGTH } from '$lib/code';
 import { db } from '$lib/server/db';
-import { COOKIE, parsePlayerCookie } from '$lib/cookies';
+import { getPlayerCookieOrThrow } from '$lib/cookies';
+import { formatZodError } from '$lib/zod-error';
 
-const codeSchema = z.string().trim().length(CODE_LENGTH);
+const actionDataSchema = z.object({ code: z.string().trim().length(CODE_LENGTH) });
 
 export const actions = {
   default: async ({ cookies, request }) => {
-    const player = parsePlayerCookie(cookies.get(COOKIE.player));
-    if (!player) {
-      throw new Error('expected player cookie');
-    }
+    const player = getPlayerCookieOrThrow(cookies);
 
     const data = await request.formData();
-    let code;
-    try {
-      code = codeSchema.parse(data.get('code'));
-    } catch (ex) {
-      if (ex instanceof ZodError) {
-        return fail(400, { error: ex.issues.map((x) => x.message).join(', ') });
-      }
+    const parsedData = actionDataSchema.safeParse({ code: data.get('code') });
+    if (!parsedData.success) {
+      return fail(400, { error: formatZodError(parsedData.error) });
     }
+    const code = parsedData.data.code;
 
     const lobby = await db.lobby.findUnique({ where: { code } });
     if (!lobby) {
