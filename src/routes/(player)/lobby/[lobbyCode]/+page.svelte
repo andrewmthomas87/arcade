@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import { invalidate } from '$app/navigation';
+  import { enhance } from '$app/forms';
 
   const INVALIDATE_INTERVAL_MS = 2000;
 
@@ -15,21 +16,41 @@
 </script>
 
 <main>
-  <div class="header">
+  <section class="header">
     <h1>Lobby</h1>
     <span class="code">{data.lobby.code}</span>
-  </div>
+  </section>
 
-  <h2>Players</h2>
-  <ul>
-    {#each data.lobby.players as player (player.id)}
-      <li>{player.name}</li>
-    {/each}
-  </ul>
+  <section>
+    <h2>Players</h2>
+    <ul>
+      {#each data.lobby.players as player (player.id)}
+        <li>{player.name}</li>
+      {/each}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Play game</h2>
+
+    <form method="POST" use:enhance>
+      <label for="game">Game</label>
+      <select id="game" value="empty">
+        <option value="empty" disabled>Select a game</option>
+        <option value="verbose">verbose</option>
+      </select>
+
+      <button type="submit">Go</button>
+    </form>
+  </section>
 </main>
 
 <style>
-  div.header {
+  section {
+    margin-bottom: 16px;
+  }
+
+  section.header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -37,7 +58,7 @@
 
   h1 {
     flex: 1;
-    color: var(--blue600);
+    color: var(--cyan700);
     font-size: 3em;
   }
 

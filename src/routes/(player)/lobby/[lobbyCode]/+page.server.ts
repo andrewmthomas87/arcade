@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
-import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import { error, fail } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ depends, params }) => {
   depends('lobby');
@@ -15,3 +15,9 @@ export const load: PageServerLoad = async ({ depends, params }) => {
 
   return { lobby };
 };
+
+export const actions = {
+  default: async () => {
+    return fail(400, { error: 'Not implemented' });
+  },
+} satisfies Actions;

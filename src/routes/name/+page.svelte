@@ -6,7 +6,9 @@
 </script>
 
 <main>
-  <h1>Welcome to the arcade</h1>
+  <h2>welcome to the</h2>
+  <h1>arcade</h1>
+
   <p>What should we call you?</p>
   <br />
 
@@ -23,13 +25,23 @@
 </main>
 
 <style>
+  main {
+    text-align: center;
+  }
+
+  h2 {
+    color: var(--pink700);
+    margin-bottom: -0.333em;
+    font-size: 1.2em;
+  }
+
   h1 {
-    color: var(--blue600);
+    color: var(--cyan700);
     font-size: 3em;
   }
 
   p.error {
-    color: var(--red600);
+    color: var(--red700);
     font-weight: 500;
   }
 </style>

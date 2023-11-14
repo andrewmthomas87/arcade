@@ -9,7 +9,7 @@
 
 <style>
   h1 {
-    color: var(--blue600);
+    color: var(--cyan700);
     font-size: 3em;
   }
 </style>

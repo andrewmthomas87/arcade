@@ -24,12 +24,12 @@
 
 <style>
   h1 {
-    color: var(--blue600);
+    color: var(--cyan700);
     font-size: 3em;
   }
 
   p.error {
-    color: var(--red600);
+    color: var(--red700);
     font-weight: 500;
   }
 </style>
