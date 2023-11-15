@@ -33,7 +33,7 @@ export function serializePlayerCookie(id: number, name: string) {
 export function getPlayerCookieOrThrow(cookies: Cookies) {
   const player = parsePlayerCookie(cookies.get(COOKIE.player));
   if (!player) {
-    throw error(400, new Error('Expected player cookie'));
+    throw error(401);
   }
 
   return player;

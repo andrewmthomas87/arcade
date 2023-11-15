@@ -36,7 +36,9 @@ export const actions = {
       where: { code: params.lobbyCode, players: { some: { id: player.id } } },
       include: { players: true },
     });
-    if (!(lobby && lobby.activeGameId === null)) {
+    if (!lobby) {
+      throw error(404);
+    } else if (lobby.activeGameId !== null) {
       throw error(400);
     }
 

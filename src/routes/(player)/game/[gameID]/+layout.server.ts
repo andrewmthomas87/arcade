@@ -13,5 +13,5 @@ export const load: LayoutServerLoad = async ({ cookies, params }) => {
     throw error(404);
   }
 
-  return { game };
+  return {};
 };

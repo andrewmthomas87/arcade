@@ -37,4 +37,14 @@ model Game {
   players Player[]
 
   activeLobby Lobby?
+  codenames   CodenamesGame?
+}
+
+// Codenames
+
+model CodenamesGame {
+  game   Game @relation(fields: [gameId], references: [id])
+  gameId Int  @id
+
+  boardSize String
 }
