@@ -1,0 +1,11 @@
+2+2+3frq.txt:
+  SCOWL 12dicts
+  http://wordlist.aspell.net/12dicts-readme/
+
+concreteness.txt:
+  Brysbaert, M., Warriner, A.B., & Kuperman, V. (2014). Concreteness ratings for 40 thousand generally known English word lemmas. Behavior Research Methods, 46, 904-911.
+  http://crr.ugent.be/archives/1330
+
+part-of-speech.txt: 
+  SCOWL Part Of Speech Database
+  http://wordlist.aspell.net/pos-readme/
