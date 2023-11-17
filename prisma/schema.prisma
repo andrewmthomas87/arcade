@@ -10,6 +10,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Word {
+  id            Int     @id @default(autoincrement())
+  word          String  @unique
+  isAlpha       Boolean
+  frequency     Int
+  partsOfSpeech String
+  concreteness  Float
+}
+
 model Player {
   id   Int    @id @default(autoincrement())
   name String
