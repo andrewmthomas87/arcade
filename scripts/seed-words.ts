@@ -16,11 +16,15 @@ const concretenessMap = parseConcretenessFile(
 const wordsByFrequency = parseWordsByFrequencyFile(
   await Bun.file(path.join(dataDirPath, '2+2+3frq.txt')).text(),
 );
+const badWordsSet = parseBadWordsFile(
+  await Bun.file(path.join(dataDirPath, 'bad-words.txt')).text(),
+);
 
 const wordDatas = wordsByFrequency.flatMap((words, i) => {
   const frequency = i + 1;
 
   return words
+    .filter((word) => !badWordsSet.has(word.toLowerCase()))
     .map((word) => {
       const isAlpha = /^[a-z]+$/i.test(word);
       const partsOfSpeech = partOfSpeechMap.get(word);
@@ -83,4 +87,8 @@ function parseWordsByFrequencyFile(text: string) {
         // Remove extra syntax characters
         .map((w) => w.replaceAll(/[!*()]/g, '')),
     );
+}
+
+function parseBadWordsFile(text: string) {
+  return new Set(text.split('\r\n').map((w) => w.trim().toLowerCase()));
 }
