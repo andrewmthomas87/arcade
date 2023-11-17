@@ -51,6 +51,11 @@ model Game {
 
 // Codenames
 
+model CodenamesWord {
+  index Int    @id
+  word  String @unique
+}
+
 model CodenamesGame {
   game   Game @relation(fields: [gameId], references: [id])
   gameId Int  @id
