@@ -3,10 +3,10 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ cookies }) => {
-  const playerCookie = parsePlayerCookie(cookies.get(COOKIE.player));
-  if (!playerCookie) {
+  const player = parsePlayerCookie(cookies.get(COOKIE.player));
+  if (!player) {
     throw redirect(307, '/name');
   }
 
-  return { playerCookie };
+  return { player };
 };

@@ -3,6 +3,7 @@
   import Create from './Create.svelte';
   import { invalidate } from '$app/navigation';
   import type { PageData } from './$types';
+  import Active from './Active.svelte';
 
   const INVALIDATE_INTERVAL_MS = 2000;
 
@@ -18,9 +19,9 @@
 <main>
   <div><span class="game-tag">codenames</span></div>
   {#if data.game.codenames === null}
-    <Create />
+    <Create players={data.game.players} />
   {:else}
-    <h1>Active</h1>
+    <Active player={data.player} round={data.game.codenames.rounds[0]} />
   {/if}
 </main>
 

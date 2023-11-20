@@ -61,4 +61,17 @@ model CodenamesGame {
   gameId Int  @id
 
   boardSize String
+
+  rounds CodenamesRound[] @relation(name: "codenames")
+}
+
+model CodenamesRound {
+  codenames CodenamesGame @relation(name: "codenames", fields: [gameId], references: [gameId])
+  gameId    Int
+  number    Int
+
+  initJSON String
+  stateJSON String
+
+  @@id([gameId, number])
 }

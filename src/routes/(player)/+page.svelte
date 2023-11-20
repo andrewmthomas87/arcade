@@ -4,28 +4,38 @@
 </script>
 
 <main>
-  <h2>welcome to the</h2>
-  <h1>arcade</h1>
+  <section>
+    <h2>welcome to the</h2>
+    <h1>arcade</h1>
 
-  <ul>
-    <li><a href="/join"><img src={joinBtnImg} alt="Join" /></a></li>
-    <li><a href="/create"><img src={createBtnImg} alt="Create" /></a></li>
-  </ul>
+    <ul>
+      <li><a href="/join"><img src={joinBtnImg} alt="Join" /></a></li>
+      <li><a href="/create"><img src={createBtnImg} alt="Create" /></a></li>
+    </ul>
+  </section>
 </main>
 
 <style>
   main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
     text-align: center;
   }
 
+  section {
+    padding: 4em 0;
+  }
+
   h2 {
-    color: var(--pink700);
+    color: var(--foreground);
     margin-bottom: -0.333em;
     font-size: 1.2em;
   }
 
   h1 {
-    color: var(--cyan700);
+    color: var(--foreground);
     font-size: 3em;
   }
 

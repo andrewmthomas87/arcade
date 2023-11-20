@@ -30,13 +30,13 @@
   }
 
   h2 {
-    color: var(--pink700);
+    color: var(--foreground);
     margin-bottom: -0.333em;
     font-size: 1.2em;
   }
 
   h1 {
-    color: var(--cyan700);
+    color: var(--foreground);
     font-size: 3em;
   }
 
