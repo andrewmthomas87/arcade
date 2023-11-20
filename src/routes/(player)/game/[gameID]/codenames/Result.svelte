@@ -27,4 +27,4 @@
   <button type="submit">Continue</button>
 </form>
 
-<Board board={state.board} {isClueGiver} />
+<Board board={state.board} covered={state.covered} {isClueGiver} />

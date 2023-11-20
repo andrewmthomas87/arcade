@@ -55,4 +55,4 @@
   {/if}
 {/if}
 
-<Board board={state.board} {isClueGiver} />
+<Board board={state.board} covered={state.covered} {isClueGiver} />
