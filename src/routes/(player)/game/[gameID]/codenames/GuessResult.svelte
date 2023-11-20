@@ -25,7 +25,7 @@
 </script>
 
 <h1>{state.turn} guessed {card.word}</h1>
-<p>
+<p class="result">
   {card.word} is
   {#if guess.status === 'correct'}
     {card.assignment} - correct!
@@ -39,20 +39,34 @@
 </p>
 
 {#if isActiveGuesser}
-  {#if guess.status === 'correct'}
-    {#if canGuessAgain}
-      <form action="?/guess-again" method="POST" use:enhance>
-        <button type="submit">Guess again</button>
+  <section>
+    {#if guess.status === 'correct'}
+      {#if canGuessAgain}
+        <form action="?/guess-again" method="POST" use:enhance>
+          <button type="submit">Guess again</button>
+        </form>
+        <br />
+      {/if}
+      <form action="?/end-guess" method="POST" use:enhance>
+        <button type="submit">End turn</button>
+      </form>
+    {:else}
+      <form action="?/end-guess" method="POST" use:enhance>
+        <button type="submit">Continue</button>
       </form>
     {/if}
-    <form action="?/end-guess" method="POST" use:enhance>
-      <button type="submit">End turn</button>
-    </form>
-  {:else}
-    <form action="?/end-guess" method="POST" use:enhance>
-      <button type="submit">Continue</button>
-    </form>
-  {/if}
+  </section>
 {/if}
 
 <Board board={state.board} covered={state.covered} {isClueGiver} />
+
+<style>
+  p.result {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+  }
+
+  section {
+    margin-bottom: 1em;
+  }
+</style>

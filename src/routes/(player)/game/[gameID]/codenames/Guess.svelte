@@ -25,7 +25,7 @@
   <h1>Waiting for {state.turn} guess</h1>
 {/if}
 
-<p>
+<p class="clue">
   Clue: {clue.word}
   {#if clue.count !== null}
     ({clue.count})
@@ -33,21 +33,41 @@
 </p>
 
 {#if isActiveGuesser}
-  <form action="?/guess" method="POST" use:enhance>
-    <label for="guess">Guess</label>
-    <select id="guess" name="guess" value="empty">
-      <option value="empty" disabled>Select a word</option>
-      {#each uncoveredCards as { card, x, y }}
-        <option value={`${x},${y}`}>{card.word}</option>
-      {/each}
-    </select>
+  <section>
+    <form action="?/guess" method="POST" use:enhance>
+      <label for="guess">Guess</label>
+      <select id="guess" name="guess" value="empty">
+        <option value="empty" disabled>Select a word</option>
+        {#each uncoveredCards as { card, x, y }}
+          <option value={`${x},${y}`}>{card.word}</option>
+        {/each}
+      </select>
 
-    <button type="submit">Submit</button>
-  </form>
+      <button type="submit">Submit</button>
+    </form>
+    <br />
 
-  <form action="?/end-guess" method="POST" use:enhance>
-    <button type="submit">End turn</button>
-  </form>
+    <form action="?/end-guess" method="POST" use:enhance>
+      <button type="submit">End turn</button>
+    </form>
+  </section>
 {/if}
 
 <Board board={state.board} covered={state.covered} {isClueGiver} />
+
+<style>
+  p.clue {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+  }
+
+  section {
+    margin-bottom: 1em;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+</style>

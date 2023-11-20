@@ -214,6 +214,45 @@ a {
   font-weight: 500;
 }
 
+input,
+select,
+button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+input:focus,
+select:focus,
+button:focus {
+  outline: none;
+  background-color: #444;
+}
+
+button {
+  background-color: var(--blue500);
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+  background-color: var(--blue600);
+  cursor: pointer;
+}
+
+button:focus {
+  background-color: var(--blue400);
+}
+
+input::placeholder,
+select::placeholder {
+  color: #bbb;
+}
+
 @media only screen and (max-width: 1024px) {
   body {
     font-size: 16px;

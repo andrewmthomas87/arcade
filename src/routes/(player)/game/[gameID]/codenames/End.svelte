@@ -13,11 +13,20 @@
 <h1>Game over</h1>
 <h2>{state.winner} team wins!</h2>
 
-<form action="?/play-again" method="POST" use:enhance>
-  <button type="submit">Play again</button>
-</form>
-<form action="?/lobby" method="POST" use:enhance>
-  <button type="submit">Back to lobby</button>
-</form>
+<section>
+  <form action="?/play-again" method="POST" use:enhance>
+    <button type="submit">Play again</button>
+  </form>
+  <br />
+  <form action="?/lobby" method="POST" use:enhance>
+    <button type="submit">Back to lobby</button>
+  </form>
+</section>
 
 <Board board={state.board} covered={state.covered} isClueGiver />
+
+<style>
+  section {
+    margin-bottom: 1em;
+  }
+</style>

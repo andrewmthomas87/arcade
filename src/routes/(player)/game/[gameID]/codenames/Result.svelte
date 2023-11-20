@@ -17,14 +17,27 @@
 
 <h1>Here's where things stand</h1>
 
-<p>
+<p class="status">
   Blue cards left: {uncoveredBlueCardCount}<br />
   Red cards left: {uncoveredRedCardCount}<br />
   Next up: {state.turn === 'blue' ? 'red' : 'blue'} team
 </p>
 
-<form action="?/result-continue" method="POST" use:enhance>
-  <button type="submit">Continue</button>
-</form>
+<section>
+  <form action="?/result-continue" method="POST" use:enhance>
+    <button type="submit">Continue</button>
+  </form>
+</section>
 
 <Board board={state.board} covered={state.covered} {isClueGiver} />
+
+<style>
+  p.status {
+    font-size: 1.25em;
+    margin-bottom: 1em;
+  }
+
+  section {
+    margin-bottom: 1em;
+  }
+</style>

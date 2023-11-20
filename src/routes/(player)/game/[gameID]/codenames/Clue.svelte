@@ -19,23 +19,37 @@
   <h1>You're up</h1>
   <br />
 
-  <form action="?/clue" method="POST" use:enhance>
-    <label for="clue">Clue</label>
-    <input id="clue" type="text" name="clue" />
+  <section>
+    <form action="?/clue" method="POST" use:enhance>
+      <label for="clue">Clue</label>
+      <input id="clue" type="text" name="clue" />
 
-    <label for="count">Count</label>
-    <select id="count" name="count" value="empty">
-      <option value="empty" disabled>Select a count</option>
-      <option value="null">None</option>
-      {#each Array.from(Array(uncoveredCount)) as _, i}
-        <option value={i + 1}>{i + 1}</option>
-      {/each}
-    </select>
+      <label for="count">Count</label>
+      <select id="count" name="count" value="empty">
+        <option value="empty" disabled>Select a count</option>
+        <option value="null">None</option>
+        {#each Array.from(Array(uncoveredCount)) as _, i}
+          <option value={i + 1}>{i + 1}</option>
+        {/each}
+      </select>
 
-    <button type="submit">Submit</button>
-  </form>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
 {:else}
   <h1>Waiting for {state.turn} clue</h1>
 {/if}
 
 <Board board={state.board} covered={state.covered} {isClueGiver} />
+
+<style>
+  section {
+    margin-bottom: 1em;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+</style>
