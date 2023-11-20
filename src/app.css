@@ -192,7 +192,13 @@ h6 {
 
 body {
   color: var(--foreground);
+  min-height: 100dvh;
   background-color: var(--background);
+  background-image: url(/arcade-background.png);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
   font-family: 'Apple II Pro', sans-serif;
   font-size: 18px;
 }
