@@ -75,3 +75,10 @@ model CodenamesRound {
 
   @@id([gameId, number])
 }
+
+// Verbose
+
+model VerboseWord {
+  index Int @id
+  word String @unique
+}
