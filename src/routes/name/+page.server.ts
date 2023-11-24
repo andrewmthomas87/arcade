@@ -24,7 +24,10 @@ export const actions = {
     const name = parsedData.data.name;
 
     const player = await db.player.create({ data: { name } });
-    cookies.set(COOKIE.player, serializePlayerCookie(player.id, player.name));
+    cookies.set(COOKIE.player, serializePlayerCookie(player.id, player.name), {
+      maxAge: 30 * 24 * 60 * 60,
+      path: '/',
+    });
 
     throw redirect(303, '/');
   },
