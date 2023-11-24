@@ -47,6 +47,7 @@ model Game {
 
   activeLobby Lobby?
   codenames   CodenamesGame?
+  verbose     VerboseGame?
 }
 
 // Codenames
@@ -62,15 +63,15 @@ model CodenamesGame {
 
   boardSize String
 
-  rounds CodenamesRound[] @relation(name: "codenames")
+  rounds CodenamesRound[]
 }
 
 model CodenamesRound {
-  codenames CodenamesGame @relation(name: "codenames", fields: [gameId], references: [gameId])
+  codenames CodenamesGame @relation(fields: [gameId], references: [gameId])
   gameId    Int
   number    Int
 
-  initJSON String
+  initJSON  String
   stateJSON String
 
   @@id([gameId, number])
@@ -79,6 +80,24 @@ model CodenamesRound {
 // Verbose
 
 model VerboseWord {
-  index Int @id
-  word String @unique
+  index Int    @id
+  word  String @unique
+}
+
+model VerboseGame {
+  game   Game @relation(fields: [gameId], references: [id])
+  gameId Int  @id
+
+  rounds VerboseRound[]
+}
+
+model VerboseRound {
+  verbose VerboseGame @relation(fields: [gameId], references: [gameId])
+  gameId  Int
+  number  Int
+
+  initJSON  String
+  stateJSON String
+
+  @@id([gameId, number])
 }
