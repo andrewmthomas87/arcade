@@ -115,7 +115,7 @@ export class Verbose {
 
     state.guesses.push({ word, isCorrect, score });
     state.score += score;
-    state.remainingRounds = Math.max(0, state.remainingRounds - (isCorrect ? 1 : 2));
+    state.remainingRounds = Math.max(0, state.remainingRounds - (score > 0 ? 1 : 2));
     state.step = 'result';
 
     await updateRoundState(round, state);
