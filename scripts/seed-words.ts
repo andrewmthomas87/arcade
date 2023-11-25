@@ -45,7 +45,7 @@ const wordDatas = wordsByFrequency.flatMap((words, i) => {
 });
 
 const db = new PrismaClient();
-await db.$transaction(wordDatas.map((data) => db.word.create({ data })));
+await db.word.createMany({ data: wordDatas });
 
 function parsePartOfSpeechFile(text: string) {
   return new Map(

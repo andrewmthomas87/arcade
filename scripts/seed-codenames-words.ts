@@ -13,6 +13,6 @@ const words = await db.word.findMany({
   },
 });
 
-await db.$transaction(
-  words.map((word, i) => db.codenamesWord.create({ data: { index: i, word: word.word } })),
-);
+await db.codenamesWord.createMany({
+  data: words.map((word, i) => ({ index: i, word: word.word })),
+});

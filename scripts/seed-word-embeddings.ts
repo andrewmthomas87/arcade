@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import fs from 'fs';
 import path from 'path';
-import readline from 'readline';
+import LineByLineReader from 'line-by-line';
 
 const DIMENSIONS = 300;
 const INSERT_BATCH_SIZE = 500;
@@ -13,37 +12,60 @@ if (Bun.argv.length !== 3) {
 const dataDirPath = Bun.argv[2];
 
 const db = new PrismaClient();
+const lr = new LineByLineReader(path.join(dataDirPath, 'embeddings.txt'));
 
-const embeddingsStream = fs.createReadStream(path.join(dataDirPath, 'embeddings.txt'));
-const rl = readline.createInterface({ input: embeddingsStream, crlfDelay: Infinity });
+let i = 0;
+console.log(i);
 
-const inputs: [string, string][] = [];
-rl.on('line', async (line) => {
-  const parts = line.split(' ');
-  if (parts.length !== DIMENSIONS + 1) {
-    return;
-  }
+await new Promise<void>((resolve) => {
+  const inputs: { ref: [string, string][] } = { ref: [] };
+  lr.on('line', async (line) => {
+    const parts = line.split(' ');
+    if (parts.length !== DIMENSIONS + 1) {
+      return;
+    }
 
-  const word = parts[0];
-  const embedding = parts.slice(1);
-  const embeddingStr = `[${embedding.join(',')}]`;
+    const word = parts[0];
+    const embedding = parts.slice(1);
+    const embeddingStr = `[${embedding.join(',')}]`;
 
-  if (!/^[a-z]+$/.test(word)) {
-    return;
-  }
+    if (!/^[a-z]+$/.test(word)) {
+      return;
+    }
 
-  inputs.push([word, embeddingStr]);
+    inputs.ref.push([word, embeddingStr]);
+
+    if (inputs.ref.length === INSERT_BATCH_SIZE) {
+      lr.pause();
+
+      const batch = inputs.ref;
+      inputs.ref = [];
+
+      await insertWordEmbeddings(batch);
+      i += batch.length;
+      console.log(i);
+
+      lr.resume();
+    }
+  });
+
+  lr.on('end', async () => {
+    if (inputs.ref.length > 0) {
+      const batch = inputs.ref;
+      inputs.ref = [];
+
+      await insertWordEmbeddings(batch);
+      i += batch.length;
+      console.log(i);
+    }
+
+    resolve();
+  });
 });
 
-await db.$transaction(
-  async () => {
-    for (let i = 0; i < Math.ceil(inputs.length / INSERT_BATCH_SIZE); i++) {
-      const batch = inputs.slice(i * INSERT_BATCH_SIZE, (i + 1) * INSERT_BATCH_SIZE);
-      const sql = `INSERT INTO "WordEmbedding" (word, embedding) VALUES ${batch
-        .map(([word, embeddingStr]) => `('${word}', '${embeddingStr}')`)
-        .join(', ')}`;
-      await db.$executeRawUnsafe(sql);
-    }
-  },
-  { timeout: 60 * 60 * 1000 },
-);
+function insertWordEmbeddings(inputs: [string, string][]) {
+  const sql = `INSERT INTO "WordEmbedding" (word, embedding) VALUES ${inputs
+    .map(([word, embeddingStr]) => `('${word}', '${embeddingStr}')`)
+    .join(', ')}`;
+  return db.$executeRawUnsafe(sql);
+}

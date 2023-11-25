@@ -13,6 +13,4 @@ const words = await db.word.findMany({
   },
 });
 
-await db.$transaction(
-  words.map((word, i) => db.verboseWord.create({ data: { index: i, word: word.word } })),
-);
+await db.verboseWord.createMany({ data: words.map((word, i) => ({ index: i, word: word.word })) });

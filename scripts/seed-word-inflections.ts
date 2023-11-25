@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import path from 'path';
 
+const INSERT_BATCH_SIZE = 500;
+
 if (Bun.argv.length !== 3) {
   console.log('Usage: seed-word-inflections.ts <data_dir_path>');
   process.exit(1);
@@ -9,11 +11,22 @@ const dataDirPath = Bun.argv[2];
 
 const inflectionsMap = parseInflections(await Bun.file(path.join(dataDirPath, 'infl.txt')).text());
 
+const entries = Array.from(inflectionsMap.entries());
+
 const db = new PrismaClient();
 await db.$transaction(
-  Array.from(inflectionsMap.entries()).map(([word, subwords]) =>
-    db.wordInflections.create({ data: { word, inflections: Array.from(subwords) } }),
-  ),
+  async () => {
+    const n = Math.ceil(entries.length / INSERT_BATCH_SIZE);
+    for (let i = 0; i < n; i++) {
+      console.log(`Batch ${i + 1}/n`);
+
+      const batch = entries.slice(i * INSERT_BATCH_SIZE, (i + 1) * INSERT_BATCH_SIZE);
+      await db.wordInflections.createMany({
+        data: batch.map(([word, subwords]) => ({ word, inflections: Array.from(subwords) })),
+      });
+    }
+  },
+  { timeout: 60 * 60 * 1000 },
 );
 
 function parseInflections(text: string) {
