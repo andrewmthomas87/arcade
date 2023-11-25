@@ -21,6 +21,11 @@ model Word {
   concreteness  Float
 }
 
+model WordInflections {
+  word        String   @id
+  inflections String[]
+}
+
 model WordEmbedding {
   word      String                     @id
   embedding Unsupported("vector(300)")
