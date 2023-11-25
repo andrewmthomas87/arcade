@@ -6,6 +6,10 @@ concreteness.txt:
   Brysbaert, M., Warriner, A.B., & Kuperman, V. (2014). Concreteness ratings for 40 thousand generally known English word lemmas. Behavior Research Methods, 46, 904-911.
   http://crr.ugent.be/archives/1330
 
+embeddings.txt:
+  Derived from fasttext wiki-news-300d-1M-subword.vec
+  https://fasttext.cc/docs/en/english-vectors.html
+
 part-of-speech.txt: 
   SCOWL Part Of Speech Database
   http://wordlist.aspell.net/pos-readme/

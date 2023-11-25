@@ -21,6 +21,11 @@ model Word {
   concreteness  Float
 }
 
+model WordEmbedding {
+  word      String                     @id
+  embedding Unsupported("vector(300)")
+}
+
 model Player {
   id   Int    @id @default(autoincrement())
   name String
