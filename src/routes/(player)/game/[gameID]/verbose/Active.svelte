@@ -33,7 +33,7 @@
 {/if}
 
 {#if state.step === 'clues'}
-  <Clues {player} {state} {isGuesser} />
+  <Clues {players} {player} {state} {isGuesser} />
 {:else if state.step === 'guess'}
   <Guess {players} {state} {isGuesser} />
 {:else if state.step === 'result'}

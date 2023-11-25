@@ -16,12 +16,14 @@ export type Step = 'clues' | 'guess' | 'result' | 'end';
 
 export type Clue = {
   word: string;
+  headwords: string[];
   isDuplicate: boolean;
 };
 
 export type Guess = {
   word: string | null;
   isCorrect: boolean;
+  score: number;
 };
 
 export type RoundInit = Pick<RoundState, 'playerIDs'> & { word: string };

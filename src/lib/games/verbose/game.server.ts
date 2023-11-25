@@ -33,7 +33,13 @@ export class Verbose {
       throw new Error('already submitted clue');
     }
 
-    state.clues[state.round - 1][player.id] = { word, isDuplicate: false };
+    const headwords = (
+      await db.wordInflections.findMany({
+        where: { word: { not: word }, inflections: { has: word } },
+      })
+    ).map((r) => r.word);
+
+    state.clues[state.round - 1][player.id] = { word, headwords, isDuplicate: false };
 
     const isReadyForGuess =
       Object.keys(state.clues[state.round - 1]).length === state.playerIDs.length - 1;
@@ -43,11 +49,31 @@ export class Verbose {
       for (const clue of Object.values(state.clues[state.round - 1])) {
         const s = clue.word.toLowerCase();
         clues.set(s, (clues.get(s) || 0) + 1);
+
+        for (const headword of clue.headwords) {
+          const s = headword.toLowerCase();
+          clues.set(s, (clues.get(s) || 0) + 1);
+        }
       }
+
       for (const key of Object.keys(state.clues[state.round - 1])) {
         const clue = state.clues[state.round - 1][key];
+
+        let isDuplicate = false;
+
         const s = clue.word.toLowerCase();
-        clue.isDuplicate = (clues.get(s) || 0) >= 2;
+        if ((clues.get(s) || 0) >= 2) {
+          isDuplicate = true;
+        }
+
+        for (const headword of clue.headwords) {
+          const s = headword.toLowerCase();
+          if ((clues.get(s) || 0) >= 2) {
+            isDuplicate = true;
+          }
+        }
+
+        clue.isDuplicate = isDuplicate;
       }
 
       state.step = 'guess';
@@ -66,11 +92,29 @@ export class Verbose {
       throw new Error('already submitted guess');
     }
 
-    const isCorrect = word.toLowerCase() === state.words[state.round - 1].toLowerCase();
-    state.guesses.push({ word, isCorrect });
-    if (isCorrect) {
-      state.score++;
+    let isCorrect = word.toLowerCase() === state.words[state.round - 1].toLowerCase();
+    if (!isCorrect) {
+      const headwordsOverlap = await db.wordInflections.count({
+        where: { inflections: { hasEvery: [word, state.words[state.round - 1]] } },
+      });
+      if (headwordsOverlap) {
+        isCorrect = true;
+      }
     }
+
+    let score = 0;
+    if (isCorrect) {
+      score = 8;
+    } else {
+      const neighbors = await getWordNearestNeighbors(state.words[state.round - 1], 50);
+      const neighborIndex = neighbors.indexOf(word.toLowerCase());
+      if (neighborIndex > 0) {
+        score = 5 - Math.trunc(5 * (neighborIndex / 50));
+      }
+    }
+
+    state.guesses.push({ word, isCorrect, score });
+    state.score += score;
     state.remainingRounds = Math.max(0, state.remainingRounds - (isCorrect ? 1 : 2));
     state.step = 'result';
 
@@ -87,7 +131,7 @@ export class Verbose {
       throw new Error('already submitted guess');
     }
 
-    state.guesses.push({ word: null, isCorrect: false });
+    state.guesses.push({ word: null, isCorrect: false, score: 0 });
     state.step = 'result';
     state.remainingRounds = Math.max(0, state.remainingRounds - 1);
 
@@ -165,4 +209,25 @@ async function updateRoundState(round: VerboseRound, state: RoundState) {
     where: { gameId_number: { gameId: round.gameId, number: round.number } },
     data: { stateJSON: JSON.stringify(state) },
   });
+}
+
+async function getWordNearestNeighbors(word: string, count: number) {
+  const exists = (await db.wordEmbedding.count({ where: { word } })) > 0;
+  if (!exists) {
+    return [];
+  }
+
+  const neighbors = await db.$queryRaw<
+    {
+      word: string;
+    }[]
+  >`
+SELECT word
+  FROM "public"."WordEmbedding"
+  WHERE word != ${word}
+  ORDER BY embedding <=> (SELECT embedding FROM "public"."WordEmbedding" WHERE word = ${word})
+  LIMIT ${count}
+;`;
+
+  return neighbors.map((n) => n.word);
 }

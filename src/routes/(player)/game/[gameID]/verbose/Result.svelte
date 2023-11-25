@@ -20,6 +20,8 @@
 <section>
   {#if guess.isCorrect}
     <h1>Wooooooo!</h1>
+  {:else if guess.score > 0}
+    <h1>So near, yet so far</h1>
   {:else}
     <h1>Womp womp...</h1>
   {/if}
@@ -34,7 +36,9 @@
       guessed<br />
       <span class={`guess ${guess.isCorrect ? 'correct' : 'incorrect'}`}>{guess.word}</span><br />
       {#if guess.isCorrect}
-        Correct!
+        Correct! {guess.score} points!
+      {:else if guess.score > 0}
+        Not bad. {guess.score} point{guess.score !== 1 ? 's' : ''}!
       {:else}
         Incorrect
       {/if}
