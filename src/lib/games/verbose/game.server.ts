@@ -109,7 +109,17 @@ export class Verbose {
       const neighbors = await getWordNearestNeighbors(state.words[state.round - 1], 50);
       const neighborIndex = neighbors.indexOf(word.toLowerCase());
       if (neighborIndex > 0) {
-        score = 5 - Math.trunc(5 * (neighborIndex / 50));
+        if (neighborIndex < 2) {
+          score = 5;
+        } else if (neighborIndex < 2 + 4) {
+          score = 4;
+        } else if (neighborIndex < 2 + 4 + 8) {
+          score = 3;
+        } else if (neighborIndex < 2 + 4 + 8 + 17) {
+          score = 2;
+        } else {
+          score = 1;
+        }
       }
     }
 
