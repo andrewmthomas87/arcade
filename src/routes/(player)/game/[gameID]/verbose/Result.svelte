@@ -3,6 +3,14 @@
   import type { RoundState } from '$lib/games/verbose/game';
   import type { Player } from '@prisma/client';
 
+  const SCORE_LABELS = {
+    1: 'Distant guess. 1 point.',
+    2: 'Vague similarity. 2 points.',
+    3: 'Moderate resemblance. 3 points.',
+    4: 'Broadly accurate. 4 points.',
+    5: 'Significantly close. 5 points.',
+  } as Record<number, string>;
+
   export let players: Player[];
   export let state: RoundState;
 
@@ -31,16 +39,16 @@
   <p>
     <span class="guesser">{guesser?.name}</span>
     {#if guess.word === null}
-      passed
+      passed. 0 points.
     {:else}
       guessed<br />
       <span class={`guess ${guess.isCorrect ? 'correct' : 'incorrect'}`}>{guess.word}</span><br />
       {#if guess.isCorrect}
         Correct! {guess.score} points!
       {:else if guess.score > 0}
-        Not bad. {guess.score} point{guess.score !== 1 ? 's' : ''}!
+        {SCORE_LABELS[guess.score]}. {guess.score} point{guess.score !== 1 ? 's' : ''}!
       {:else}
-        Incorrect
+        Incorrect. 0 points aaaaaand you lose a round...
       {/if}
     {/if}
   </p>
