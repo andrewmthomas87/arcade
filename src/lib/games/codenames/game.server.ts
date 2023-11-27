@@ -293,13 +293,36 @@ async function generateBoard(
 
   const count = await db.codenamesWord.count();
 
-  const indices = new Set<number>();
-  while (indices.size < size.w * size.h) {
-    const index = Math.trunc(Math.random() * count);
-    indices.add(index);
+  let sum = 0;
+  const sizes: number[] = [];
+  while (sum < size.w * size.h) {
+    let n = Math.trunc(Math.random() * 4) + 2;
+    n = Math.min(n, size.w * size.h - sum);
+
+    sum += n;
+    sizes.push(n);
   }
 
-  const words = await db.codenamesWord.findMany({ where: { index: { in: Array.from(indices) } } });
+  const indicesSet = new Set<number>();
+  while (indicesSet.size < sizes.length) {
+    const index = Math.trunc(Math.random() * count);
+    indicesSet.add(index);
+  }
+  const indices = Array.from(indicesSet);
+
+  const words: string[] = [];
+  for (let i = 0; i < sizes.length; i++) {
+    const size = sizes[i];
+    const index = indices[i];
+
+    const word = (await db.codenamesWord.findUniqueOrThrow({ where: { index } })).word;
+    words.push(word);
+
+    let neighbors = await getWordNearestNeighbors(word, (size - 1) * 3);
+    shuffleArrayDurstenfeld(neighbors);
+
+    words.push(...neighbors.slice(0, size - 1));
+  }
   shuffleArrayDurstenfeld(words);
 
   const assignments = ([turn] as CardAssignment[]).concat(
@@ -318,10 +341,26 @@ async function generateBoard(
       board.push([]);
     }
 
-    const word = words[i].word;
+    const word = words[i];
     const assignment = assignments[i];
     board[y][x] = { word, assignment };
   }
 
   return board;
+}
+
+async function getWordNearestNeighbors(word: string, count: number) {
+  const neighbors = await db.$queryRaw<
+    {
+      word: string;
+    }[]
+  >`
+SELECT cw.word
+  FROM "WordEmbedding" we, "CodenamesWord" cw
+  WHERE we.word = cw.word
+  ORDER BY we.embedding <=> (SELECT embedding FROM "WordEmbedding" WHERE word = ${word})
+  LIMIT ${count}
+;`;
+
+  return neighbors.map((n) => n.word);
 }
