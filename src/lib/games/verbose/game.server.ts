@@ -106,20 +106,23 @@ export class Verbose {
     if (isCorrect) {
       score = 8;
     } else {
-      const neighbors = await getWordNearestNeighbors(state.words[state.round - 1], 50);
-      const neighborIndex = neighbors.indexOf(word.toLowerCase());
-      if (neighborIndex > 0) {
-        if (neighborIndex < 2) {
-          score = 5;
-        } else if (neighborIndex < 2 + 4) {
-          score = 4;
-        } else if (neighborIndex < 2 + 4 + 8) {
-          score = 3;
-        } else if (neighborIndex < 2 + 4 + 8 + 17) {
-          score = 2;
-        } else {
-          score = 1;
-        }
+      const { euclidean, cosine } = await getDistances(
+        state.words[state.round - 1],
+        word.toLowerCase(),
+      );
+      const distanceScore =
+        (Math.max(0, (euclidean - 0.1) / 0.3) + Math.max(0, (cosine - 0.1) / 0.4)) / 2;
+
+      if (distanceScore <= 0.12) {
+        score = 5;
+      } else if (distanceScore <= 0.29) {
+        score = 4;
+      } else if (distanceScore <= 0.51) {
+        score = 3;
+      } else if (distanceScore <= 0.74) {
+        score = 2;
+      } else if (distanceScore <= 1) {
+        score = 1;
       }
     }
 
@@ -221,23 +224,27 @@ async function updateRoundState(round: VerboseRound, state: RoundState) {
   });
 }
 
-async function getWordNearestNeighbors(word: string, count: number) {
-  const exists = (await db.wordEmbedding.count({ where: { word } })) > 0;
+async function getDistances(a: string, b: string) {
+  const exists = (await db.wordEmbedding.count({ where: { word: { in: [a, b] } } })) === 2;
   if (!exists) {
-    return [];
+    return { euclidean: Infinity, cosine: Infinity };
   }
 
-  const neighbors = await db.$queryRaw<
-    {
-      word: string;
-    }[]
-  >`
-SELECT word
-  FROM "public"."WordEmbedding"
-  WHERE word != ${word}
-  ORDER BY embedding <=> (SELECT embedding FROM "public"."WordEmbedding" WHERE word = ${word})
-  LIMIT ${count}
-;`;
+  const distances = await db.$queryRaw<{ euclidean: number; cosine: number }[]>`
+WITH w as (
+  SELECT embedding
+  FROM "WordEmbedding"
+  WHERE word = ${a}
+)
+SELECT
+  embedding <-> (SELECT embedding FROM w) euclidean,
+  embedding <=> (SELECT embedding FROM w) cosine
+  FROM "WordEmbedding"
+  WHERE word = ${b}
+  `;
+  if (distances.length !== 1) {
+    return { euclidean: Infinity, cosine: Infinity };
+  }
 
-  return neighbors.map((n) => n.word);
+  return distances[0];
 }
