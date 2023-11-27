@@ -318,7 +318,7 @@ async function generateBoard(
     const word = (await db.codenamesWord.findUniqueOrThrow({ where: { index } })).word;
     words.push(word);
 
-    let neighbors = await getWordNearestNeighbors(word, (size - 1) * 3);
+    let neighbors = await getWordNearestNeighbors(word, Math.min(5, (size - 1) * 2));
     shuffleArrayDurstenfeld(neighbors);
 
     words.push(...neighbors.slice(0, size - 1));

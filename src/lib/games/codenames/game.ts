@@ -18,8 +18,8 @@ export const BOARD_COUNTS = {
   '3x4': { blue: 4, red: 4, neutral: 2, bad: 1 },
   '3x5': { blue: 5, red: 5, neutral: 3, bad: 1 },
   '4x4': { blue: 5, red: 5, neutral: 4, bad: 1 },
-  '4x5': { blue: 0, red: 0, neutral: 0, bad: 1 },
-  '5x5': { blue: 0, red: 0, neutral: 0, bad: 1 },
+  '4x5': { blue: 6, red: 6, neutral: 6, bad: 1 },
+  '5x5': { blue: 8, red: 8, neutral: 7, bad: 1 },
 } satisfies Record<BoardSizeKey, Record<CardAssignment, number>>;
 
 export type RoundState = {
