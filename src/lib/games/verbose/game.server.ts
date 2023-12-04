@@ -113,15 +113,15 @@ export class Verbose {
       const distanceScore =
         (Math.max(0, (euclidean - 0.1) / 0.3) + Math.max(0, (cosine - 0.1) / 0.4)) / 2;
 
-      if (distanceScore <= 0.12) {
+      if (distanceScore <= 0.5714) {
         score = 5;
-      } else if (distanceScore <= 0.29) {
+      } else if (distanceScore <= 0.7552) {
         score = 4;
-      } else if (distanceScore <= 0.51) {
+      } else if (distanceScore <= 0.8411) {
         score = 3;
-      } else if (distanceScore <= 0.74) {
+      } else if (distanceScore <= 0.9151) {
         score = 2;
-      } else if (distanceScore <= 1) {
+      } else if (distanceScore <= 1.1513) {
         score = 1;
       }
     }
