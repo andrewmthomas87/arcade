@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { shuffleArrayDurstenfeld } from '$lib/utils/shuffle';
-import type { CodenamesGame, CodenamesRound } from '@prisma/client';
+import { Prisma, type CodenamesGame, type CodenamesRound } from '@prisma/client';
 import { BOARD_COUNTS, BOARD_SIZES, buildRoundState, type BoardSize } from './game';
 import type {
   BoardSizeKey,
@@ -318,7 +318,7 @@ async function generateBoard(
     const word = (await db.codenamesWord.findUniqueOrThrow({ where: { index } })).word;
     words.push(word);
 
-    let neighbors = await getWordNearestNeighbors(word, Math.min(5, (size - 1) * 2));
+    let neighbors = await getWordNearestNeighbors(word, Math.min(5, (size - 1) * 2), words);
     shuffleArrayDurstenfeld(neighbors);
 
     words.push(...neighbors.slice(0, size - 1));
@@ -349,7 +349,7 @@ async function generateBoard(
   return board;
 }
 
-async function getWordNearestNeighbors(word: string, count: number) {
+async function getWordNearestNeighbors(word: string, count: number, excludeWords: string[]) {
   const neighbors = await db.$queryRaw<
     {
       word: string;
@@ -358,6 +358,7 @@ async function getWordNearestNeighbors(word: string, count: number) {
 SELECT cw.word
   FROM "WordEmbedding" we, "CodenamesWord" cw
   WHERE we.word = cw.word
+  AND cw.word NOT IN (${Prisma.join(excludeWords)})
   ORDER BY we.embedding <=> (SELECT embedding FROM "WordEmbedding" WHERE word = ${word})
   LIMIT ${count}
 ;`;

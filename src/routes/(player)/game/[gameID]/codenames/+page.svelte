@@ -17,7 +17,7 @@
 </script>
 
 <main>
-  <div><span class="game-tag">codenames!</span></div>
+  <div><span class="game-tag">codenames</span></div>
   {#if data.game.codenames === null}
     <Create players={data.game.players} />
   {:else}
