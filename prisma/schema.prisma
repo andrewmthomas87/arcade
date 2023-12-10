@@ -89,6 +89,13 @@ model CodenamesRound {
   @@id([gameId, number])
 }
 
+// Doodledash
+
+model DoodledashWord {
+  index Int @id
+  word String @unique
+}
+
 // Verbose
 
 model VerboseWord {
