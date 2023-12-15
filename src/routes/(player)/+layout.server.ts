@@ -11,7 +11,7 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
 
   const count = await db.player.count({ where: { id: player.id } });
   if (count === 0) {
-    cookies.delete(COOKIE.player);
+    cookies.delete(COOKIE.player, { path: '/' });
 
     throw redirect(307, '/name');
   }
