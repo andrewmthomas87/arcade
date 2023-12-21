@@ -1,9 +1,12 @@
-import { db } from '$lib/server/db';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { GameDB } from '$lib/db/game.server';
 
 export const load: PageServerLoad = async ({ params }) => {
-  const game = await db.game.findUniqueOrThrow({ where: { id: Number(params.gameID) || -1 } });
+  const game = await GameDB.byID(Number(params.gameID) || -1);
+  if (!game) {
+    throw error(404);
+  }
 
   throw redirect(307, `/game/${params.gameID}/${game.type}`);
 };

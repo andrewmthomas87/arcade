@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
-import { formatZodError } from '$lib/zod-error';
+import { db } from '$lib/server/db';
 import { COOKIE, serializePlayerCookie } from '$lib/cookies';
-import { PlayerDB } from '$lib/db/player.server';
+import { formatZodError } from '$lib/zod-error';
 
 const actionDataSchema = z.object({
   name: z
@@ -23,7 +23,7 @@ export const actions = {
     }
     const name = parsedData.data.name;
 
-    const player = await PlayerDB.create(name);
+    const player = await db.player.create({ data: { name } });
     cookies.set(COOKIE.player, serializePlayerCookie(player.id, player.name), {
       maxAge: 30 * 24 * 60 * 60,
       path: '/',

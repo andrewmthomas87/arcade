@@ -1,4 +1,4 @@
-import { db } from '$lib/server/db';
+import { db } from '$lib/db/db.server';
 import type { VerboseGame, VerboseRound } from '@prisma/client';
 import { buildRoundState, type RoundInit, type RoundState } from './game';
 import type { PlayerCookie } from '$lib/cookies';

@@ -28,6 +28,7 @@
     "prettier": "^2.8.0",
     "prettier-plugin-svelte": "^2.10.1",
     "prisma": "^5.5.2",
+    "sass": "^1.69.5",
     "svelte": "^4.0.5",
     "svelte-check": "^3.4.3",
     "tslib": "^2.4.1",
@@ -38,6 +39,7 @@
   "type": "module",
   "dependencies": {
     "@prisma/client": "^5.5.2",
+    "bulma": "^0.9.4",
     "line-by-line": "^0.1.6",
     "zod": "^3.22.4"
   }

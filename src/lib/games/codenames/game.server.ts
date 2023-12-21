@@ -1,4 +1,4 @@
-import { db } from '$lib/server/db';
+import { db } from '$lib/db/db.server';
 import { shuffleArrayDurstenfeld } from '$lib/utils/shuffle';
 import { Prisma, type CodenamesGame, type CodenamesRound } from '@prisma/client';
 import { BOARD_COUNTS, BOARD_SIZES, buildRoundState, type BoardSize } from './game';

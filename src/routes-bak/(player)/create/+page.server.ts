@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { getPlayerCookieOrThrow } from '$lib/cookies';
 import { generateRandomCode } from '$lib/code';
-import { LobbyDB } from '$lib/db/lobby.server';
+import { db } from '$lib/server/db';
 
 const GENERATE_CODE_MAX_ATTEMPTS = 10;
 
@@ -15,7 +15,7 @@ export const actions = {
       return fail(400, { error: 'Failed to generate unique code' });
     }
 
-    const lobby = await LobbyDB.createAndAddPlayer(code, player.id);
+    const lobby = await createLobby(code, player.id);
 
     throw redirect(303, `/lobby/${lobby.code}`);
   },
@@ -25,11 +25,17 @@ async function generateUniqueCode(maxAttempts: number) {
   for (let i = 0; i < maxAttempts; i++) {
     const code = generateRandomCode();
 
-    const exists = await LobbyDB.existsByCode(code);
-    if (!exists) {
+    const lobby = await db.lobby.findUnique({ where: { code }, select: { code: true } });
+    if (lobby === null) {
       return code;
     }
   }
 
   return null;
+}
+
+async function createLobby(code: string, playerID: number) {
+  return await db.lobby.create({
+    data: { code, players: { connect: { id: playerID } } },
+  });
 }

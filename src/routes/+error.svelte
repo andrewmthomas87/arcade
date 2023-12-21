@@ -3,13 +3,10 @@
 </script>
 
 <main>
-  <h1>{$page.status}</h1>
-  <p>{$page.error?.message}</p>
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h1 class="title">{$page.status}</h1>
+      <h2 class="subtitle">{$page.error?.message}</h2>
+    </div>
+  </section>
 </main>
-
-<style>
-  h1 {
-    color: var(--cyan700);
-    font-size: 3em;
-  }
-</style>

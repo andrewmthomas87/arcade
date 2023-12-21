@@ -1,19 +1,19 @@
+import { db } from '$lib/server/db';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod';
 import { GAME_TYPES } from '$lib/games';
 import { formatZodError } from '$lib/zod-error';
 import { getPlayerCookieOrThrow } from '$lib/cookies';
-import { LobbyDB } from '$lib/db/lobby.server';
-import { GameDB } from '$lib/db/game.server';
 
 export const load: PageServerLoad = async ({ cookies, depends, params }) => {
   depends('lobby');
 
   const player = getPlayerCookieOrThrow(cookies);
 
-  const lobby = await LobbyDB.byCodeAndPlayer(params.lobbyCode, player.id, {
-    include: LobbyDB.include.playersAndActiveGameWithPlayers,
+  const lobby = await db.lobby.findUnique({
+    where: { code: params.lobbyCode, players: { some: { id: player.id } } },
+    include: { players: true, activeGame: { include: { players: true } } },
   });
   if (!lobby) {
     throw error(404);
@@ -32,8 +32,9 @@ export const actions = {
   default: async ({ cookies, params, request }) => {
     const player = getPlayerCookieOrThrow(cookies);
 
-    const lobby = await LobbyDB.byCodeAndPlayer(params.lobbyCode, player.id, {
-      include: LobbyDB.include.players,
+    const lobby = await db.lobby.findUnique({
+      where: { code: params.lobbyCode, players: { some: { id: player.id } } },
+      include: { players: true },
     });
     if (!lobby) {
       throw error(404);
@@ -48,11 +49,14 @@ export const actions = {
     }
     const type = parsedData.data.type;
 
-    const game = await GameDB.create(
-      type,
-      lobby.players.map((p) => p.id),
-      lobby.id,
-    );
+    const game = await db.game.create({
+      data: {
+        type,
+        players: { connect: lobby.players.map((player) => ({ id: player.id })) },
+        lobby: { connect: { id: lobby.id } },
+        activeLobby: { connect: { id: lobby.id } },
+      },
+    });
 
     throw redirect(303, `/game/${game.id}`);
   },

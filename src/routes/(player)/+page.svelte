@@ -1,59 +1,52 @@
 <script lang="ts">
-  import createBtnImg from '$lib/assets/create-btn.gif';
-  import joinBtnImg from '$lib/assets/join-btn.gif';
+  import createImg from '$lib/assets/create.png';
+  import joinImg from '$lib/assets/join.png';
+  import { onMount } from 'svelte';
+  import { fade, scale, slide } from 'svelte/transition';
+
+  let isMounted = false;
+
+  onMount(() => {
+    isMounted = true;
+  });
 </script>
 
-<main>
-  <section>
-    <h2>welcome to the</h2>
-    <h1>arcade</h1>
+{#if isMounted}
+  <main class="has-background-darkened" in:fade={{ delay: 750 }}>
+    <section class="section" in:slide={{ delay: 1000 }}>
+      <div class="container is-max-desktop">
+        <div class="block">
+          <h1 class="is-size-5 has-text-primary-dark has-text-weight-bold">
+            welcome to the<br /><span class="is-size-1 has-text-primary">arcade</span>
+          </h1>
+        </div>
 
-    <ul>
-      <li><a href="/join"><img src={joinBtnImg} alt="Join" /></a></li>
-      <li><a href="/create"><img src={createBtnImg} alt="Create" /></a></li>
-    </ul>
-  </section>
-</main>
+        <div class="columns" in:scale={{ delay: 1500 }}>
+          <div class="column"><a href="/join"><img src={joinImg} alt="Join" /></a></div>
+          <div class="column"><a href="/create"><img src={createImg} alt="Create" /></a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+{/if}
 
 <style>
-  main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100dvh;
-    text-align: center;
-  }
-
-  section {
-    padding: 4em 0;
-  }
-
-  h2 {
-    color: var(--foreground);
-    margin-bottom: -0.333em;
-    font-size: 1.2em;
+  :global(html) {
+    background-image: url(/vector-wallpaper-d53764a5a540a2d890e3a0d85f94e122.png);
   }
 
   h1 {
-    color: var(--foreground);
-    font-size: 3em;
+    line-height: 1.875em;
+    text-align: center;
   }
 
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  li {
-    margin-bottom: 12px;
-  }
-
-  a {
-    display: inline-block;
+  .columns {
+    max-width: 1536px;
+    max-height: 1536px;
+    margin: auto;
   }
 
   img {
-    width: 380px;
-    image-rendering: pixelated;
+    border-radius: 4px;
   }
 </style>

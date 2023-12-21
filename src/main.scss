@@ -1,0 +1,114 @@
+@charset 'utf-8';
+
+@import 'bulma/sass/utilities/functions.sass';
+
+$black: hsl(0, 0%, 4%);
+$black-bis: hsl(0, 0%, 7%);
+$black-ter: hsl(0, 0%, 14%);
+$grey-darker: hsl(0, 0%, 21%);
+$grey-dark: hsl(0, 0%, 29%);
+$grey: hsl(0, 0%, 48%);
+$grey-light: hsl(0, 0%, 71%);
+$grey-lighter: hsl(0, 0%, 86%);
+$grey-lightest: hsl(0, 0%, 93%);
+$white-ter: hsl(0, 0%, 96%);
+$white-bis: hsl(0, 0%, 98%);
+$white: hsl(0, 0%, 100%);
+$orange: hsl(14, 100%, 53%);
+$yellow: hsl(44, 100%, 77%);
+$green: hsl(153, 53%, 53%);
+$turquoise: hsl(171, 100%, 41%);
+$cyan: hsl(207, 61%, 53%);
+$blue: hsl(229, 53%, 53%);
+$purple: hsl(271, 100%, 71%);
+$red: hsl(348, 86%, 61%);
+
+$primary: $turquoise;
+$info: $cyan;
+$success: $green;
+$warning: $yellow;
+$danger: $red;
+$light: $black-ter;
+$dark: $grey-lighter;
+$orange-invert: findColorInvert($orange);
+$yellow-invert: findColorInvert($yellow);
+$green-invert: findColorInvert($green);
+$turquoise-invert: findColorInvert($turquoise);
+$cyan-invert: findColorInvert($cyan);
+$blue-invert: findColorInvert($blue);
+$purple-invert: findColorInvert($purple);
+$red-invert: findColorInvert($red);
+$primary-invert: findColorInvert($primary);
+$primary-light: findDarkColor($primary);
+$primary-dark: findLightColor($primary);
+$info-invert: findColorInvert($info);
+$info-light: findDarkColor($info);
+$info-dark: findLightColor($info);
+$success-invert: findColorInvert($success);
+$success-light: findDarkColor($success);
+$success-dark: findLightColor($success);
+$warning-invert: findColorInvert($warning);
+$warning-light: findDarkColor($warning);
+$warning-dark: findLightColor($warning);
+$danger-invert: findColorInvert($danger);
+$danger-light: findDarkColor($danger);
+$danger-dark: findLightColor($danger);
+$light-invert: findColorInvert($light);
+$dark-invert: findColorInvert($dark);
+$scheme-main: $black;
+$scheme-main-bis: $black-bis;
+$scheme-main-ter: $black-ter;
+$scheme-invert: $white;
+$scheme-invert-bis: $white-bis;
+$scheme-invert-ter: $white-ter;
+$background: $black-ter;
+$border: $grey-darker;
+$border-hover: $grey-dark;
+$border-light: $black-ter;
+$border-light-hover: $grey-dark;
+$text: $grey-lighter;
+$text-invert: findColorInvert($text);
+$text-light: $grey-light;
+$text-strong: $grey-lightest;
+$code: lighten($red, 15%);
+$code-background: $background;
+$pre: $text;
+$pre-background: $background;
+$link: $blue;
+$link-invert: findColorInvert($link);
+$link-light: findDarkColor($link);
+$link-dark: findLightColor($link);
+$link-visited: $purple;
+$link-hover: $grey-lighter;
+$link-hover-border: $grey-dark;
+$link-focus: $grey-lighter;
+$link-focus-border: $blue;
+$link-active: $grey-lighter;
+$link-active-border: $grey-light;
+
+$body-size: 20px;
+$family-monospace: 'Print Char 21', monospace;
+$family-primary: $family-monospace;
+$family-secondary: $family-monospace;
+
+@import 'bulma/bulma';
+
+@font-face {
+  font-family: 'Print Char 21';
+  src: url('/PrintChar21.ttf') format('truetype');
+}
+
+html {
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+}
+
+body,
+main {
+  min-height: 100vh;
+}
+
+.has-background-darkened {
+  background-color: hsla(0, 0%, 7%, 62.5%);
+}
