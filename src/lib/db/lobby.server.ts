@@ -43,4 +43,11 @@ export class LobbyDB {
   static addPlayer(code: string, playerID: number) {
     return db.lobby.update({ where: { code }, data: { players: { connect: { id: playerID } } } });
   }
+
+  static disconnectActiveGame(id: number) {
+    return db.lobby.update({
+      where: { id },
+      data: { activeGame: { disconnect: true } },
+    });
+  }
 }

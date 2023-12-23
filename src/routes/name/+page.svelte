@@ -1,22 +1,18 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import type { ActionData } from './$types';
+  import AnimateOnMount from '$lib/components/AnimateOnMount.svelte';
+  import { delay } from '$lib/animation';
 
   export let form: ActionData;
 
-  let isMounted = false;
   let isSubmitting = false;
-
-  onMount(() => {
-    isMounted = true;
-  });
 </script>
 
 <main class="has-background-darkened">
-  {#if isMounted}
-    <section class="section" in:slide={{ delay: 250 }}>
+  <AnimateOnMount>
+    <section class="section" in:slide={{ delay: delay(0) }}>
       <div class="container is-max-desktop">
         <div class="block">
           <h1 class="is-size-5 has-text-primary-dark has-text-weight-bold">
@@ -60,7 +56,7 @@
         </div>
       </div>
     </section>
-  {/if}
+  </AnimateOnMount>
 </main>
 
 <style>

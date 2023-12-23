@@ -1,17 +1,11 @@
 <script lang="ts">
   import createImg from '$lib/assets/create.png';
   import joinImg from '$lib/assets/join.png';
-  import { onMount } from 'svelte';
   import { fade, scale, slide } from 'svelte/transition';
-
-  let isMounted = false;
-
-  onMount(() => {
-    isMounted = true;
-  });
+  import AnimateOnMount from '$lib/components/AnimateOnMount.svelte';
 </script>
 
-{#if isMounted}
+<AnimateOnMount>
   <main class="has-background-darkened" in:fade={{ delay: 750 }}>
     <section class="section" in:slide={{ delay: 1000 }}>
       <div class="container is-max-desktop">
@@ -28,7 +22,7 @@
       </div>
     </section>
   </main>
-{/if}
+</AnimateOnMount>
 
 <style>
   :global(html) {

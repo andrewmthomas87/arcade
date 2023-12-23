@@ -1,27 +1,23 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { CODE_LENGTH } from '$lib/code';
-  import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import type { ActionData } from './$types';
   import joinImg from '$lib/assets/join.png';
   import { page } from '$app/stores';
+  import AnimateOnMount from '$lib/components/AnimateOnMount.svelte';
+  import { delay } from '$lib/animation';
 
   export let form: ActionData;
 
-  let isMounted = false;
   let code = $page.params['code'] || '';
 
   $: code = code.toUpperCase().slice(0, CODE_LENGTH);
-
-  onMount(() => {
-    isMounted = true;
-  });
 </script>
 
 <main class="has-background-darkened">
-  {#if isMounted}
-    <section class="section" in:slide={{ delay: 250 }}>
+  <AnimateOnMount>
+    <section class="section" in:slide={{ delay: delay(0) }}>
       <div class="container is-max-desktop">
         <div class="banner block">
           <figure class="image is-16by9">
@@ -58,7 +54,7 @@
         </div>
       </div>
     </section>
-  {/if}
+  </AnimateOnMount>
 </main>
 
 <style>

@@ -6,18 +6,16 @@
   import { GAME_TYPES } from '$lib/games';
   import { scale, slide } from 'svelte/transition';
   import Code from '../../game/[gameID]/Code.svelte';
+  import AnimateOnMount from '$lib/components/AnimateOnMount.svelte';
+  import { delay } from '$lib/animation';
 
   const INVALIDATE_INTERVAL_MS = 2000;
 
   export let data: PageData;
 
-  let isMounted = false;
-
   $: isLocked = data.lobby.activeGame !== null;
 
   onMount(() => {
-    isMounted = true;
-
     const id = setInterval(() => invalidate('lobby'), INVALIDATE_INTERVAL_MS);
 
     return () => clearInterval(id);
@@ -25,8 +23,8 @@
 </script>
 
 <main class="has-background-darkened">
-  {#if isMounted}
-    <section class="section" in:slide={{ delay: 250 }}>
+  <AnimateOnMount>
+    <section class="section" in:slide={{ delay: delay(0) }}>
       <div class="container is-max-desktop">
         <div class="level">
           <div class="level-left">
@@ -38,7 +36,7 @@
             <div class="level-item">
               <div
                 class="is-flex is-flex-direction-column is-align-items-center"
-                in:scale={{ delay: 422 }}
+                in:scale={{ delay: delay(2) }}
               >
                 <Code code={data.lobby.code} />
               </div>
@@ -61,7 +59,7 @@
       </div>
     </section>
 
-    <section class="section" in:slide={{ delay: 336 }}>
+    <section class="section" in:slide={{ delay: delay(1) }}>
       <div class="container is-max-desktop">
         <h2 class="subtitle">Play game</h2>
 
@@ -90,7 +88,7 @@
         </div>
       </div>
     </section>
-  {/if}
+  </AnimateOnMount>
 </main>
 
 <style>

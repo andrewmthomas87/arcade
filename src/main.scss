@@ -14,14 +14,14 @@ $grey-lightest: hsl(0, 0%, 93%);
 $white-ter: hsl(0, 0%, 96%);
 $white-bis: hsl(0, 0%, 98%);
 $white: hsl(0, 0%, 100%);
-$orange: hsl(14, 100%, 53%);
-$yellow: hsl(44, 100%, 77%);
-$green: hsl(153, 53%, 53%);
-$turquoise: hsl(171, 100%, 41%);
-$cyan: hsl(207, 61%, 53%);
-$blue: hsl(229, 53%, 53%);
-$purple: hsl(271, 100%, 71%);
-$red: hsl(348, 86%, 61%);
+$orange: hsl(14, 100%, 42%);
+$yellow: hsl(44, 100%, 61%);
+$green: hsl(153, 53%, 42%);
+$turquoise: hsl(171, 100%, 32%);
+$cyan: hsl(207, 61%, 52%);
+$blue: hsl(229, 53%, 42%);
+$purple: hsl(271, 100%, 56%);
+$red: hsl(348, 76%, 56%);
 
 $primary: $turquoise;
 $info: $cyan;
@@ -111,4 +111,31 @@ main {
 
 .has-background-darkened {
   background-color: hsla(0, 0%, 7%, 62.5%);
+}
+
+.has-underline {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.has-underline.is-success {
+  color: $success;
+  text-decoration-color: $success;
+}
+
+.has-underline.is-warning {
+  color: $warning;
+  text-decoration-color: $warning;
+}
+
+.has-underline.is-danger {
+  color: $danger;
+  text-decoration-color: $danger;
+}
+
+.has-underline.is-info {
+  color: $info;
+  text-decoration-color: $info;
 }

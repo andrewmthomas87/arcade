@@ -4,6 +4,174 @@ import { buildRoundState, type RoundInit, type RoundState } from './game';
 import type { PlayerCookie } from '$lib/cookies';
 
 export class Verbose {
+  static async getRandomWord() {
+    const count = await db.verboseWord.count();
+    const index = Math.trunc(Math.random() * count);
+    const word = await db.verboseWord.findUniqueOrThrow({ where: { index } });
+
+    return word.word;
+  }
+
+  static async cluesSubmit(state: RoundState, player: PlayerCookie, word: string) {
+    if (state.step !== 'clues') {
+      throw new Error('expected clues step');
+    } else if (state.guesserID === player.id) {
+      throw new Error('unauthorized');
+    } else if (state.clues[state.round - 1][player.id]) {
+      throw new Error('already submitted clue');
+    }
+
+    const headwords = (
+      await db.wordInflections.findMany({
+        where: { word: { not: word.toLowerCase() }, inflections: { has: word.toLowerCase() } },
+      })
+    ).map((r) => r.word.toLowerCase());
+
+    state.clues[state.round - 1][player.id] = { word, headwords, isDuplicate: false };
+  }
+
+  static cluesIsDone(state: RoundState) {
+    if (state.step !== 'clues') {
+      throw new Error('expected clues step');
+    }
+
+    return Object.keys(state.clues[state.round - 1]).length === state.playerIDs.length - 1;
+  }
+
+  static cluesFinalize(state: RoundState) {
+    if (state.step !== 'clues') {
+      throw new Error('expected clues step');
+    }
+
+    // Count words and headwords
+    const counts = new Map<string, number>();
+    for (const clue of Object.values(state.clues[state.round - 1])) {
+      const s = clue.word.toLowerCase();
+      counts.set(s, (counts.get(s) || 0) + 1);
+
+      for (const headword of clue.headwords) {
+        const s = headword.toLowerCase();
+        counts.set(s, (counts.get(s) || 0) + 1);
+      }
+    }
+
+    // Mark duplicates
+    for (const key of Object.keys(state.clues[state.round - 1])) {
+      const clue = state.clues[state.round - 1][key];
+
+      let isDuplicate = false;
+
+      const s = clue.word.toLowerCase();
+      if ((counts.get(s) || 0) > 1) {
+        isDuplicate = true;
+      }
+
+      for (const headword of clue.headwords) {
+        const s = headword.toLowerCase();
+        if ((counts.get(s) || 0) > 1) {
+          isDuplicate = true;
+        }
+      }
+
+      clue.isDuplicate = isDuplicate;
+    }
+
+    state.step = 'guess';
+  }
+
+  static async guessSubmit(state: RoundState, player: PlayerCookie, word: string) {
+    if (state.step !== 'guess') {
+      throw new Error('expected guess step');
+    } else if (state.guesserID !== player.id) {
+      throw new Error('unauthorized');
+    } else if (state.guesses.length >= state.round) {
+      throw new Error('already submitted guess');
+    }
+
+    let isCorrect = word.toLowerCase() === state.words[state.round - 1].toLowerCase();
+    if (!isCorrect) {
+      const guessHeadwords = await db.wordInflections.findMany({
+        where: { word: { not: word.toLowerCase() }, inflections: { has: word.toLowerCase() } },
+      });
+      const wordHeadwords = await db.wordInflections.findMany({
+        where: {
+          word: { not: state.words[state.round - 1].toLowerCase() },
+          inflections: { has: state.words[state.round - 1].toLowerCase() },
+        },
+      });
+
+      const isOverlap =
+        new Set([word.toLowerCase(), ...guessHeadwords, ...wordHeadwords]).size <
+        1 + guessHeadwords.length + wordHeadwords.length;
+      if (isOverlap) {
+        isCorrect = true;
+      }
+    }
+
+    let score = 0;
+    if (isCorrect) {
+      score = 8;
+    } else {
+      const { euclidean, cosine } = await getDistances(
+        state.words[state.round - 1].toLowerCase(),
+        word.toLowerCase(),
+      );
+      const distanceScore =
+        (Math.max(0, (euclidean - 0.1) / 0.3) + Math.max(0, (cosine - 0.1) / 0.4)) / 2;
+
+      if (distanceScore <= 0.5714) {
+        score = 5;
+      } else if (distanceScore <= 0.7552) {
+        score = 4;
+      } else if (distanceScore <= 0.8411) {
+        score = 3;
+      } else if (distanceScore <= 0.9151) {
+        score = 2;
+      } else if (distanceScore <= 1.1513) {
+        score = 1;
+      }
+    }
+
+    state.guesses.push({ word, isCorrect, score });
+    state.score += score;
+    state.remainingRounds = Math.max(0, state.remainingRounds - (score > 0 ? 1 : 2));
+    state.step = 'result';
+  }
+
+  static async guessPass(state: RoundState, player: PlayerCookie) {
+    if (state.step !== 'guess') {
+      throw new Error('expected guess step');
+    } else if (state.guesserID !== player.id) {
+      throw new Error('unauthorized');
+    } else if (state.guesses.length >= state.round) {
+      throw new Error('already submitted guess');
+    }
+
+    state.guesses.push({ word: null, isCorrect: false, score: 0 });
+    state.step = 'result';
+    state.remainingRounds = Math.max(0, state.remainingRounds - 1);
+  }
+
+  static async resultContinue(state: RoundState) {
+    if (state.step !== 'result') {
+      throw new Error('expected result step');
+    }
+
+    if (state.remainingRounds === 0) {
+      state.step = 'end';
+    } else {
+      const prevGuesserIndex = state.playerIDs.findIndex((id) => id === state.guesserID);
+      const word = await getRandomWord();
+
+      state.round++;
+      state.guesserID = state.playerIDs[(prevGuesserIndex + 1) % state.playerIDs.length];
+      state.step = 'clues';
+
+      state.words.push(word);
+      state.clues.push({});
+    }
+  }
+
   static async create(gameID: number, playerIDs: number[]) {
     const word = await getRandomWord();
     const init: RoundInit = { playerIDs, word };
@@ -21,65 +189,6 @@ export class Verbose {
         },
       },
     });
-  }
-
-  static async submitClue(round: VerboseRound, player: PlayerCookie, word: string) {
-    const state = JSON.parse(round.stateJSON) as RoundState;
-    if (state.step !== 'clues') {
-      throw new Error('expected clues step');
-    } else if (state.guesserID === player.id) {
-      throw new Error('unauthorized');
-    } else if (state.clues[state.round - 1][player.id]) {
-      throw new Error('already submitted clue');
-    }
-
-    const headwords = (
-      await db.wordInflections.findMany({
-        where: { word: { not: word }, inflections: { has: word } },
-      })
-    ).map((r) => r.word);
-
-    state.clues[state.round - 1][player.id] = { word, headwords, isDuplicate: false };
-
-    const isReadyForGuess =
-      Object.keys(state.clues[state.round - 1]).length === state.playerIDs.length - 1;
-    if (isReadyForGuess) {
-      // Mark duplicates
-      const clues = new Map<string, number>();
-      for (const clue of Object.values(state.clues[state.round - 1])) {
-        const s = clue.word.toLowerCase();
-        clues.set(s, (clues.get(s) || 0) + 1);
-
-        for (const headword of clue.headwords) {
-          const s = headword.toLowerCase();
-          clues.set(s, (clues.get(s) || 0) + 1);
-        }
-      }
-
-      for (const key of Object.keys(state.clues[state.round - 1])) {
-        const clue = state.clues[state.round - 1][key];
-
-        let isDuplicate = false;
-
-        const s = clue.word.toLowerCase();
-        if ((clues.get(s) || 0) >= 2) {
-          isDuplicate = true;
-        }
-
-        for (const headword of clue.headwords) {
-          const s = headword.toLowerCase();
-          if ((clues.get(s) || 0) >= 2) {
-            isDuplicate = true;
-          }
-        }
-
-        clue.isDuplicate = isDuplicate;
-      }
-
-      state.step = 'guess';
-    }
-
-    await updateRoundState(round, state);
   }
 
   static async submitGuess(round: VerboseRound, player: PlayerCookie, word: string) {
