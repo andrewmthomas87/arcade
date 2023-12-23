@@ -1,7 +1,6 @@
 import { db } from '$lib/db/db.server';
-import type { VerboseGame, VerboseRound } from '@prisma/client';
-import { buildRoundState, type RoundInit, type RoundState } from './game';
 import type { PlayerCookie } from '$lib/cookies';
+import type { RoundState } from './game';
 
 export class Verbose {
   static async getRandomWord() {
@@ -161,7 +160,7 @@ export class Verbose {
       state.step = 'end';
     } else {
       const prevGuesserIndex = state.playerIDs.findIndex((id) => id === state.guesserID);
-      const word = await getRandomWord();
+      const word = await Verbose.getRandomWord();
 
       state.round++;
       state.guesserID = state.playerIDs[(prevGuesserIndex + 1) % state.playerIDs.length];
@@ -171,166 +170,6 @@ export class Verbose {
       state.clues.push({});
     }
   }
-
-  static async create(gameID: number, playerIDs: number[]) {
-    const word = await getRandomWord();
-    const init: RoundInit = { playerIDs, word };
-    const roundState = buildRoundState(init);
-
-    return await db.verboseGame.create({
-      data: {
-        game: { connect: { id: gameID } },
-        rounds: {
-          create: {
-            number: 1,
-            initJSON: JSON.stringify(init),
-            stateJSON: JSON.stringify(roundState),
-          },
-        },
-      },
-    });
-  }
-
-  static async submitGuess(round: VerboseRound, player: PlayerCookie, word: string) {
-    const state = JSON.parse(round.stateJSON) as RoundState;
-    if (state.step !== 'guess') {
-      throw new Error('expected guess step');
-    } else if (state.guesserID !== player.id) {
-      throw new Error('unauthorized');
-    } else if (state.guesses.length >= state.round) {
-      throw new Error('already submitted guess');
-    }
-
-    let isCorrect = word.toLowerCase() === state.words[state.round - 1].toLowerCase();
-    if (!isCorrect) {
-      const headwordsOverlap = await db.wordInflections.count({
-        where: { inflections: { hasEvery: [word, state.words[state.round - 1]] } },
-      });
-      if (headwordsOverlap) {
-        isCorrect = true;
-      }
-    }
-
-    let score = 0;
-    if (isCorrect) {
-      score = 8;
-    } else {
-      const { euclidean, cosine } = await getDistances(
-        state.words[state.round - 1],
-        word.toLowerCase(),
-      );
-      const distanceScore =
-        (Math.max(0, (euclidean - 0.1) / 0.3) + Math.max(0, (cosine - 0.1) / 0.4)) / 2;
-
-      if (distanceScore <= 0.5714) {
-        score = 5;
-      } else if (distanceScore <= 0.7552) {
-        score = 4;
-      } else if (distanceScore <= 0.8411) {
-        score = 3;
-      } else if (distanceScore <= 0.9151) {
-        score = 2;
-      } else if (distanceScore <= 1.1513) {
-        score = 1;
-      }
-    }
-
-    state.guesses.push({ word, isCorrect, score });
-    state.score += score;
-    state.remainingRounds = Math.max(0, state.remainingRounds - (score > 0 ? 1 : 2));
-    state.step = 'result';
-
-    await updateRoundState(round, state);
-  }
-
-  static async submitPass(round: VerboseRound, player: PlayerCookie) {
-    const state = JSON.parse(round.stateJSON) as RoundState;
-    if (state.step !== 'guess') {
-      throw new Error('expected guess step');
-    } else if (state.guesserID !== player.id) {
-      throw new Error('unauthorized');
-    } else if (state.guesses.length >= state.round) {
-      throw new Error('already submitted guess');
-    }
-
-    state.guesses.push({ word: null, isCorrect: false, score: 0 });
-    state.step = 'result';
-    state.remainingRounds = Math.max(0, state.remainingRounds - 1);
-
-    await updateRoundState(round, state);
-  }
-
-  static async continueToNextRound(round: VerboseRound) {
-    const state = JSON.parse(round.stateJSON) as RoundState;
-    if (state.step !== 'result') {
-      throw new Error('expected result step');
-    } else if (state.remainingRounds <= 0) {
-      throw new Error('no remaining rounds');
-    }
-
-    const prevGuesserIndex = state.playerIDs.findIndex((id) => id === state.guesserID);
-    const word = await getRandomWord();
-
-    state.round++;
-    state.guesserID = state.playerIDs[(prevGuesserIndex + 1) % state.playerIDs.length];
-    state.step = 'clues';
-
-    state.words.push(word);
-    state.clues.push({});
-
-    await updateRoundState(round, state);
-  }
-
-  static async continueToEnd(round: VerboseRound) {
-    const state = JSON.parse(round.stateJSON) as RoundState;
-    if (state.step !== 'result') {
-      throw new Error('expected result step');
-    } else if (state.remainingRounds !== 0) {
-      throw new Error("can't end with remaining rounds");
-    }
-
-    state.step = 'end';
-
-    await updateRoundState(round, state);
-  }
-
-  static async playAgain(verbose: VerboseGame, round: VerboseRound) {
-    const prevInit = JSON.parse(round.initJSON) as RoundInit;
-
-    const { playerIDs } = prevInit;
-    const word = await getRandomWord();
-
-    const init: RoundInit = { playerIDs, word };
-    const roundState = buildRoundState(init);
-
-    return await db.verboseGame.update({
-      where: { gameId: verbose.gameId },
-      data: {
-        rounds: {
-          create: {
-            number: round.number + 1,
-            initJSON: JSON.stringify(init),
-            stateJSON: JSON.stringify(roundState),
-          },
-        },
-      },
-    });
-  }
-}
-
-async function getRandomWord() {
-  const count = await db.verboseWord.count();
-  const index = Math.trunc(Math.random() * count);
-  const word = await db.verboseWord.findUniqueOrThrow({ where: { index } });
-
-  return word.word;
-}
-
-async function updateRoundState(round: VerboseRound, state: RoundState) {
-  return await db.verboseRound.update({
-    where: { gameId_number: { gameId: round.gameId, number: round.number } },
-    data: { stateJSON: JSON.stringify(state) },
-  });
 }
 
 async function getDistances(a: string, b: string) {
