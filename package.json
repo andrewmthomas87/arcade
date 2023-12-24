@@ -41,6 +41,8 @@
     "@prisma/client": "^5.5.2",
     "bulma": "^0.9.4",
     "line-by-line": "^0.1.6",
+    "openai": "^4.24.1",
+    "simplify-js": "^1.2.4",
     "zod": "^3.22.4"
   }
 }

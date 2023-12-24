@@ -6,7 +6,7 @@
 
   onMount(() => {
     const id = setInterval(() => {
-      invalidate('verbose');
+      invalidate('doodledash');
       invalidate('game');
     }, INVALIDATE_INTERVAL_MS);
 
@@ -18,6 +18,6 @@
 
 <style>
   :global(html) {
-    background-image: url(/verbose-bg-a5cc49ddc0addcdb55accbf88532b738.png);
+    background-image: url(/doodledash-1cec76c28b890092a60992a91b2766cc.png);
   }
 </style>

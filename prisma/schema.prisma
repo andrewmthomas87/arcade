@@ -59,6 +59,7 @@ model Game {
 
   activeLobby Lobby?
   codenames   CodenamesGame?
+  doodledash  DoodledashGame?
   verbose     VerboseGame?
 }
 
@@ -92,8 +93,26 @@ model CodenamesRound {
 // Doodledash
 
 model DoodledashWord {
-  index Int @id
-  word String @unique
+  index Int    @id
+  word  String @unique
+}
+
+model DoodledashGame {
+  game   Game @relation(fields: [gameId], references: [id])
+  gameId Int  @id
+
+  rounds DoodledashRound[]
+}
+
+model DoodledashRound {
+  doodledash DoodledashGame @relation(fields: [gameId], references: [gameId])
+  gameId     Int
+  number     Int
+
+  initJSON  String
+  stateJSON String
+
+  @@id([gameId, number])
 }
 
 // Verbose

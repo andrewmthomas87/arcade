@@ -102,6 +102,7 @@ html {
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
+  image-rendering: pixelated;
 }
 
 body,
@@ -111,6 +112,10 @@ main {
 
 .has-background-darkened {
   background-color: hsla(0, 0%, 7%, 62.5%);
+}
+
+.has-background-darkened-er {
+  background-color: hsla(0, 0%, 7%, 75%);
 }
 
 .has-underline {
