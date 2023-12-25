@@ -40,7 +40,9 @@
           {#if data.submittedGuess}
             <h2 class="subtitle">Submitted! You guessed:</h2>
             <div class="block">
-              <span class="tag is-light is-medium">{data.submittedGuess}</span>
+              <article class="message is-light is-medium">
+                <div class="message-body">{data.submittedGuess}</div>
+              </article>
             </div>
           {:else}
             <h2 class="subtitle">What did they draw?</h2>

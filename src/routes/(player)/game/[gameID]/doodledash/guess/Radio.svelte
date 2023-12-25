@@ -9,11 +9,14 @@
     <div class="mb-2">
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <span
-        class="tag is-light is-medium is-clickable"
+      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+      <article
+        class="message is-light is-medium is-clickable"
         class:is-success={selected === i}
-        on:click={() => (selected = i)}>{option}</span
+        on:click={() => (selected = i)}
       >
+        <div class="message-body">{option}</div>
+      </article>
     </div>
   {/each}
 

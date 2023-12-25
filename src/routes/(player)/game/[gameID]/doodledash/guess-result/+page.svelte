@@ -39,7 +39,9 @@
 
         <h2 class="subtitle">¯\_(ツ)_/¯... the prompt was:</h2>
         <div class="block">
-          <span class="tag is-success is-medium">{data.prompt}</span>
+          <article class="message is-success is-medium">
+            <div class="message-body">{data.prompt}</div>
+          </article>
         </div>
 
         <div class="block canvas">
@@ -101,7 +103,9 @@
               {/if}
               answer:<br />
               {#if player}
-                <span class="tag is-light is-medium">{data.answers[player.id]}</span>
+                <article class="message is-light">
+                  <div class="message-body">{data.answers[player.id]}</div>
+                </article>
               {/if}
             </p>
           </div>

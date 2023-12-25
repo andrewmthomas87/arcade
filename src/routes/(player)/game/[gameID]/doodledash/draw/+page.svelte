@@ -20,7 +20,9 @@
         <h1 class="title">Time to draw!</h1>
         <h2 class="subtitle">Your prompt is:</h2>
         <div class="block">
-          <span class="tag is-info is-medium">{data.prompt}</span>
+          <article class="message is-info is-medium">
+            <div class="message-body">{data.prompt}</div>
+          </article>
         </div>
 
         {#if data.submittedDrawing}
