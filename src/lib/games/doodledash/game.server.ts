@@ -31,7 +31,7 @@ export class Doodledash {
         throw new Error('failed to generate prompts');
       }
 
-      prompts[id] = prompt;
+      prompts[id] = prompt.trim().toLowerCase();
     }
 
     state.prompts[state.round - 1] = prompts;
@@ -64,7 +64,7 @@ export class Doodledash {
       throw new Error('invalid action');
     }
 
-    state.answers[state.round - 1][activePlayerID][player.id] = answer;
+    state.answers[state.round - 1][activePlayerID][player.id] = answer.trim().toLowerCase();
 
     const isActivePlayerComplete =
       Object.keys(state.answers[state.round - 1][activePlayerID]).length ===
