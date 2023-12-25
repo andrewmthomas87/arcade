@@ -130,11 +130,11 @@
   class="has-background-black"
   width={size * unit}
   height={size * unit}
-  on:mousedown={handleMouseDown}
-  on:mousemove={handleMouseMove}
-  on:touchstart={handleTouchStart}
-  on:touchmove={handleTouchMove}
-  on:touchend={handleCancel}
+  on:mousedown|preventDefault={handleMouseDown}
+  on:mousemove|preventDefault={handleMouseMove}
+  on:touchstart|preventDefault={handleTouchStart}
+  on:touchmove|preventDefault={handleTouchMove}
+  on:touchend|preventDefault={handleCancel}
 />
 
 <style>
