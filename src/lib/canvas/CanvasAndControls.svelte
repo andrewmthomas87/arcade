@@ -26,26 +26,29 @@
 </script>
 
 <div class="mb-2">
-  <div class="level">
+  <div class="level is-mobile">
     <div class="level-left">
       <div class="level-item">
-        <button class="button" on:click={() => (dropdown = dropdown === 'color' ? 'none' : 'color')}
-          >Color</button
+        <button
+          class="button is-small"
+          on:click={() => (dropdown = dropdown === 'color' ? 'none' : 'color')}>Color</button
         >
       </div>
       <div class="level-item">
         <button
-          class="button"
+          class="button is-small"
           on:click={() => (dropdown = dropdown === 'weight' ? 'none' : 'weight')}>Weight</button
         >
       </div>
     </div>
     <div class="level-right">
       <div class="level-item">
-        <button class="button" disabled={paths.length === 0} on:click={handleUndo}>Undo</button>
+        <button class="button is-small" disabled={paths.length === 0} on:click={handleUndo}
+          >Undo</button
+        >
       </div>
       <div class="level-item">
-        <button class="button" on:click={handleClear}>Clear</button>
+        <button class="button is-small" on:click={handleClear}>Clear</button>
       </div>
     </div>
   </div>
