@@ -103,7 +103,7 @@
               {/if}
               answer:<br />
               {#if player}
-                <article class="message is-light">
+                <article class="message">
                   <div class="message-body">{data.answers[player.id]}</div>
                 </article>
               {/if}

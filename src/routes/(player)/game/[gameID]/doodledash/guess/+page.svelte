@@ -40,7 +40,7 @@
           {#if data.submittedGuess}
             <h2 class="subtitle">Submitted! You guessed:</h2>
             <div class="block">
-              <article class="message is-light is-medium">
+              <article class="message is-medium">
                 <div class="message-body">{data.submittedGuess}</div>
               </article>
             </div>

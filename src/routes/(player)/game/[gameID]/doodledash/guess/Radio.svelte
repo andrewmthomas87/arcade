@@ -11,7 +11,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
       <article
-        class="message is-light is-medium is-clickable"
+        class="message is-medium is-clickable"
         class:is-success={selected === i}
         on:click={() => (selected = i)}
       >
