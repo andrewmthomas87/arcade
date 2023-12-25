@@ -10,7 +10,7 @@ export class DoodledashAI {
           {
             role: 'system',
             content:
-              'Generate a prompt for a drawing game, incorporating the provided words. Prompts are about 5 words. Prompts should be draw-able. No punctuation.',
+              'Generate a prompt for a drawing game, incorporating the provided words. Prompts are about 5 words (8 words maximum). Prompts should be draw-able. No punctuation.',
           },
           { role: 'user', content: 'scooter and telephone' },
           { role: 'assistant', content: 'scooter tangled in telephone wires' },
