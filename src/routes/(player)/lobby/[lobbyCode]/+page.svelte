@@ -5,9 +5,9 @@
   import { enhance } from '$app/forms';
   import { GAME_TYPES } from '$lib/games';
   import { scale, slide } from 'svelte/transition';
-  import Code from '../../game/[gameID]/Code.svelte';
   import AnimateOnMount from '$lib/components/AnimateOnMount.svelte';
   import { delay } from '$lib/animation';
+  import Code from './Code.svelte';
 
   const INVALIDATE_INTERVAL_MS = 2000;
 
