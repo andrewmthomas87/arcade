@@ -36,6 +36,7 @@ export class Doodledash {
 
     state.prompts[state.round - 1] = prompts;
     state.step = 'draw';
+    state.drawTimerEnd = Date.now() + state.config.drawTime * 1000;
   }
 
   static drawSubmit(state: RoundState, player: PlayerCookie, drawing: Drawing) {
@@ -47,11 +48,26 @@ export class Doodledash {
 
     const isDrawComplete =
       Object.keys(state.drawings[state.round - 1]).length === state.playerIDs.length;
-    if (isDrawComplete) {
-      const firstPlayerID = state.order[state.round - 1][0];
-      state.answers[state.round - 1][firstPlayerID] = {};
-      state.step = 'answer';
+    return isDrawComplete;
+  }
+
+  static drawFinalize(state: RoundState) {
+    if (state.step !== 'draw') {
+      throw new Error('expected draw step');
     }
+
+    for (const playerID of state.playerIDs) {
+      if (!(playerID in state.drawings[state.round - 1])) {
+        state.drawings[state.round - 1][playerID] = [];
+      }
+    }
+
+    state.drawTimerEnd = -1;
+
+    const firstPlayerID = state.order[state.round - 1][0];
+    state.answers[state.round - 1][firstPlayerID] = {};
+    state.step = 'answer';
+    state.answerTimerEnd = Date.now() + state.config.answerTime * 1000;
   }
 
   static answerSubmit(state: RoundState, player: PlayerCookie, answer: string) {
@@ -69,14 +85,25 @@ export class Doodledash {
     const isActivePlayerComplete =
       Object.keys(state.answers[state.round - 1][activePlayerID]).length ===
       state.playerIDs.length - 1;
-    if (isActivePlayerComplete) {
-      const order = state.playerIDs.slice();
-      shuffleArrayDurstenfeld(order);
+    return isActivePlayerComplete;
+  }
 
-      state.answerOrders[state.round - 1][activePlayerID] = order;
-      state.guesses[state.round - 1][activePlayerID] = {};
-      state.step = 'guess';
+  static answerFinalize(state: RoundState) {
+    if (state.step !== 'answer') {
+      throw new Error('expected answer step');
     }
+
+    state.answerTimerEnd = -1;
+
+    const activePlayerID = state.order[state.round - 1][state.index];
+
+    const order = state.playerIDs.slice();
+    shuffleArrayDurstenfeld(order);
+
+    state.answerOrders[state.round - 1][activePlayerID] = order;
+    state.guesses[state.round - 1][activePlayerID] = {};
+    state.step = 'guess';
+    state.guessTimerEnd = Date.now() + state.config.guessTime * 1000;
   }
 
   static guessSubmit(state: RoundState, player: PlayerCookie, guessIndex: number) {
@@ -100,9 +127,16 @@ export class Doodledash {
     const isActivePlayerComplete =
       Object.keys(state.guesses[state.round - 1][activePlayerID]).length ===
       state.playerIDs.length - 1;
-    if (isActivePlayerComplete) {
-      state.step = 'guess_result';
+    return isActivePlayerComplete;
+  }
+
+  static guessFinalize(state: RoundState) {
+    if (state.step !== 'guess') {
+      throw new Error('expected guess step');
     }
+
+    state.guessTimerEnd = -1;
+    state.step = 'guess_result';
   }
 
   static guessResultContinue(state: RoundState) {
@@ -118,7 +152,10 @@ export class Doodledash {
       const nextActivePlayerID = state.order[state.round - 1][state.index];
       state.answers[state.round - 1][nextActivePlayerID] = {};
       state.step = 'answer';
+      state.answerTimerEnd = Date.now() + state.config.answerTime * 1000;
     }
+
+    return isLastPlayer;
   }
 
   static resultContinue(state: RoundState) {

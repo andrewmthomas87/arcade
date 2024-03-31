@@ -1,10 +1,11 @@
 <script lang="ts">
   import AnimateOnMount from '$lib/components/AnimateOnMount.svelte';
-  import { slide } from 'svelte/transition';
+  import { scale, slide } from 'svelte/transition';
   import type { PageData } from './$types';
   import { delay } from '$lib/animation';
   import ViewCanvas from '$lib/canvas/ViewCanvas.svelte';
   import { enhance } from '$app/forms';
+  import Countdown from '$lib/components/Countdown.svelte';
 
   export let data: PageData;
 </script>
@@ -14,7 +15,25 @@
     <AnimateOnMount>
       <section class="section" in:slide={{ delay: delay(0) }}>
         <div class="container is-max-desktop">
-          <h1 class="title">Here's your drawing</h1>
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <h1 class="title">Here's your drawing</h1>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <div
+                  class="is-flex is-flex-direction-column is-align-items-center"
+                  in:scale={{ delay: delay(1) }}
+                >
+                  <span class="tag is-large is-warning">
+                    <Countdown end={data.answerTimerEnd} />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div class="block canvas">
             <ViewCanvas size={128} unit={2} paths={data.activeDrawing} animationDuration={3750} />
@@ -28,9 +47,28 @@
     <AnimateOnMount>
       <section class="section" in:slide={{ delay: delay(0) }}>
         <div class="container is-max-desktop">
-          <h1 class="title">
-            Here's <span class="has-underline is-info">{data.activePlayer.name}</span>'s drawing
-          </h1>
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <h1 class="title">
+                  Here's <span class="has-underline is-info">{data.activePlayer.name}</span>'s
+                  drawing
+                </h1>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <div
+                  class="is-flex is-flex-direction-column is-align-items-center"
+                  in:scale={{ delay: delay(1) }}
+                >
+                  <span class="tag is-large is-warning">
+                    <Countdown end={data.answerTimerEnd} />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div class="block canvas">
             <ViewCanvas size={128} unit={2} paths={data.activeDrawing} animationDuration={3750} />

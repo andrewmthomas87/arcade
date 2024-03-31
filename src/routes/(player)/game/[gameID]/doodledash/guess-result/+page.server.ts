@@ -4,6 +4,7 @@ import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { RoundState } from '$lib/games/doodledash/game';
 import { Doodledash } from '$lib/games/doodledash/game.server';
+import { DoodledashJobs } from '$lib/games/doodledash/jobs.server';
 
 export const load: PageServerLoad = async ({ cookies, depends, params }) => {
   depends('doodledash');
@@ -40,8 +41,10 @@ export const load: PageServerLoad = async ({ cookies, depends, params }) => {
       continue;
     }
 
-    const guessPlayerID = guesses[playerID];
-    guessesByPlayer[guessPlayerID].push(playerID);
+    if (playerID in guesses) {
+      const guessPlayerID = guesses[playerID];
+      guessesByPlayer[guessPlayerID].push(playerID);
+    }
   }
 
   return {
@@ -74,7 +77,10 @@ export const actions = {
     }
 
     try {
-      Doodledash.guessResultContinue(state);
+      const isLastPlayer = Doodledash.guessResultContinue(state);
+      if (!isLastPlayer) {
+        DoodledashJobs.setAnswerTimer(game.id, state.answerTimerEnd);
+      }
       await DoodledashDB.updateRoundState(round, state);
     } catch (ex) {
       return fail(500, { error: 'Something went wrong' });

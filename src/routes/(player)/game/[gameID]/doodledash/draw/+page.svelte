@@ -1,10 +1,11 @@
 <script lang="ts">
   import { delay } from '$lib/animation';
   import AnimateOnMount from '$lib/components/AnimateOnMount.svelte';
-  import { slide } from 'svelte/transition';
+  import { scale, slide } from 'svelte/transition';
   import type { PageData } from './$types';
   import type { Drawing } from '$lib/games/doodledash/game';
   import { enhance } from '$app/forms';
+  import Countdown from '$lib/components/Countdown.svelte';
   import ViewCanvas from '$lib/canvas/ViewCanvas.svelte';
   import CanvasAndControls from '$lib/canvas/CanvasAndControls.svelte';
 
@@ -17,7 +18,25 @@
   <AnimateOnMount>
     <section class="section" in:slide={{ delay: delay(0) }}>
       <div class="container is-max-desktop">
-        <h1 class="title">Time to draw!</h1>
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <h1 class="title">Time to draw!</h1>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <div
+                class="is-flex is-flex-direction-column is-align-items-center"
+                in:scale={{ delay: delay(1) }}
+              >
+                <span class="tag is-large is-warning">
+                  <Countdown end={data.drawTimerEnd} />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
         <h2 class="subtitle">Your prompt is:</h2>
         <div class="block">
           <article class="message is-info is-medium">

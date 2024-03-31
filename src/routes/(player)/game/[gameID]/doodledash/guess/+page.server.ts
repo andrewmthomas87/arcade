@@ -6,6 +6,7 @@ import type { RoundState } from '$lib/games/doodledash/game';
 import { z } from 'zod';
 import { formatZodError } from '$lib/zod-error';
 import { Doodledash } from '$lib/games/doodledash/game.server';
+import { DoodledashJobs } from '$lib/games/doodledash/jobs.server';
 
 export const load: PageServerLoad = async ({ cookies, depends, params }) => {
   depends('doodledash');
@@ -24,7 +25,7 @@ export const load: PageServerLoad = async ({ cookies, depends, params }) => {
     throw error(400);
   }
 
-  const index = state.index;
+  const { index, guessTimerEnd } = state;
   const activePlayerID = state.order[state.round - 1][index];
   const activePlayer = game.players.find((p) => p.id === activePlayerID)!;
   const isMe = activePlayerID === player.id;
@@ -43,7 +44,7 @@ export const load: PageServerLoad = async ({ cookies, depends, params }) => {
         : state.answers[state.round - 1][activePlayerID][submittedGuessPlayerID];
   }
 
-  return { index, activePlayer, isMe, activeDrawing, activeAnswers, submittedGuess };
+  return { index, guessTimerEnd, activePlayer, isMe, activeDrawing, activeAnswers, submittedGuess };
 };
 
 const defaultActionDataSchema = z.object({ index: z.coerce.number() });
@@ -72,7 +73,11 @@ export const actions = {
     const { index } = parsedData.data;
 
     try {
-      Doodledash.guessSubmit(state, player, index);
+      const isActivePlayerComplete = Doodledash.guessSubmit(state, player, index);
+      if (isActivePlayerComplete) {
+        Doodledash.guessFinalize(state);
+        DoodledashJobs.clearGuessTimer(game.id);
+      }
       await DoodledashDB.updateRoundState(round, state);
     } catch (ex) {
       return fail(500, { error: 'Something went wrong' });

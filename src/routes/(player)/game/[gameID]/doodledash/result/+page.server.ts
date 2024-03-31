@@ -27,7 +27,7 @@ export const actions = {
       await DoodledashDB.updateRoundState(round, state);
 
       if (shouldGeneratePrompts) {
-        setTimeout(() => DoodledashJobs.generatePrompts(game.id, player.id), 0);
+        setTimeout(() => DoodledashJobs.generatePrompts(game.id), 0);
       }
     } catch (ex) {
       return fail(500, { error: 'Something went wrong' });

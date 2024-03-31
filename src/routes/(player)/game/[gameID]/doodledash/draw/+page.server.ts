@@ -6,6 +6,7 @@ import type { RoundState } from '$lib/games/doodledash/game';
 import { z } from 'zod';
 import { formatZodError } from '$lib/zod-error';
 import { Doodledash } from '$lib/games/doodledash/game.server';
+import { DoodledashJobs } from '$lib/games/doodledash/jobs.server';
 
 export const load: PageServerLoad = async ({ cookies, depends, params }) => {
   depends('doodledash');
@@ -24,10 +25,11 @@ export const load: PageServerLoad = async ({ cookies, depends, params }) => {
     throw error(400);
   }
 
+  const { drawTimerEnd } = state;
   const prompt = state.prompts[state.round - 1][player.id];
   const submittedDrawing = state.drawings[state.round - 1][player.id];
 
-  return { prompt, submittedDrawing };
+  return { drawTimerEnd, prompt, submittedDrawing };
 };
 
 const defaultActionDataSchema = z.object({ drawing: z.string() });
@@ -53,7 +55,12 @@ export const actions = {
     try {
       const state = JSON.parse(round.stateJSON) as RoundState;
 
-      Doodledash.drawSubmit(state, player, JSON.parse(drawing));
+      const isDrawComplete = Doodledash.drawSubmit(state, player, JSON.parse(drawing));
+      if (isDrawComplete) {
+        Doodledash.drawFinalize(state);
+        DoodledashJobs.clearDrawTimer(game.id);
+        DoodledashJobs.setAnswerTimer(game.id, state.answerTimerEnd);
+      }
       await DoodledashDB.updateRoundState(round, state);
     } catch (ex) {
       return fail(500, { error: 'Something went wrong' });

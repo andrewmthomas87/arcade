@@ -25,6 +25,15 @@ export class DoodledashDB {
     });
   }
 
+  static byID<T extends Omit<Prisma.GameFindUniqueArgs, 'where'>>(id: number, extra: T) {
+    const args = {
+      where: { id, type: 'doodledash' },
+      ...extra,
+    } satisfies Prisma.GameFindUniqueArgs;
+
+    return db.game.findUnique<typeof args>(args as any);
+  }
+
   static byIDAndPlayer<T extends Omit<Prisma.GameFindUniqueArgs, 'where'>>(
     id: number,
     playerID: number,

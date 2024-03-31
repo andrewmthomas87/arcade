@@ -19,13 +19,13 @@ export const actions = {
 
     try {
       const prevInit = JSON.parse(round.initJSON) as RoundInit;
-      const { playerIDs } = prevInit;
+      const { playerIDs, config } = prevInit;
 
-      const init: RoundInit = { playerIDs };
+      const init: RoundInit = { playerIDs, config };
       const state = buildRoundState(init);
       await DoodledashDB.addRound(game.id, round.number + 1, init, state);
 
-      setTimeout(() => DoodledashJobs.generatePrompts(game.id, player.id), 0);
+      setTimeout(() => DoodledashJobs.generatePrompts(game.id), 0);
     } catch (ex) {
       return fail(500, { error: 'Something went wrong' });
     }
