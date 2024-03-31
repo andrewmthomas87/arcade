@@ -6,11 +6,9 @@
   import { delay } from '$lib/animation';
 
   const SCORE_LABELS = {
-    1: 'Distant guess',
-    2: 'Vague similarity',
-    3: 'Moderate resemblance',
-    4: 'Broadly accurate',
-    5: 'Significantly close',
+    1: 'Vague similarity',
+    2: 'Broadly accurate',
+    3: 'Significantly close',
   } as Record<number, string>;
 
   export let data: PageData;

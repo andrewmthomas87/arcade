@@ -1,6 +1,7 @@
 import { db } from '$lib/db/db.server';
 import type { PlayerCookie } from '$lib/cookies';
 import type { RoundState } from './game';
+import { VerboseAI } from '$lib/ai/verbose.server';
 
 export class Verbose {
   static async getRandomWord() {
@@ -109,25 +110,15 @@ export class Verbose {
 
     let score = 0;
     if (isCorrect) {
-      score = 8;
+      score = 5;
     } else {
-      const { euclidean, cosine } = await getDistances(
-        state.words[state.round - 1].toLowerCase(),
-        word.toLowerCase(),
-      );
-      const distanceScore =
-        (Math.max(0, (euclidean - 0.1) / 0.3) + Math.max(0, (cosine - 0.1) / 0.4)) / 2;
-
-      if (distanceScore <= 0.5714) {
-        score = 5;
-      } else if (distanceScore <= 0.7552) {
-        score = 4;
-      } else if (distanceScore <= 0.8411) {
-        score = 3;
-      } else if (distanceScore <= 0.9151) {
-        score = 2;
-      } else if (distanceScore <= 1.1513) {
-        score = 1;
+      try {
+        score = await VerboseAI.scoreGuess(
+          state.words[state.round - 1].toLowerCase(),
+          word.toLowerCase(),
+        );
+      } catch (ex) {
+        score = 0;
       }
     }
 
@@ -170,29 +161,4 @@ export class Verbose {
       state.clues.push({});
     }
   }
-}
-
-async function getDistances(a: string, b: string) {
-  const exists = (await db.wordEmbedding.count({ where: { word: { in: [a, b] } } })) === 2;
-  if (!exists) {
-    return { euclidean: Infinity, cosine: Infinity };
-  }
-
-  const distances = await db.$queryRaw<{ euclidean: number; cosine: number }[]>`
-WITH w as (
-  SELECT embedding
-  FROM "WordEmbedding"
-  WHERE word = ${a}
-)
-SELECT
-  embedding <-> (SELECT embedding FROM w) euclidean,
-  embedding <=> (SELECT embedding FROM w) cosine
-  FROM "WordEmbedding"
-  WHERE word = ${b}
-  `;
-  if (distances.length !== 1) {
-    return { euclidean: Infinity, cosine: Infinity };
-  }
-
-  return distances[0];
 }
